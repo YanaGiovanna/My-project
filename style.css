@@ -84,3 +84,48 @@ h3{font-size:25px;margin:0 0 12px}
   .required-mark,.optional-mark{display:block;width:max-content;margin:6px 0 0}
   .field-help{font-size:17px}
 }
+
+/* ===== v5.5 final presentation polish ===== */
+.onair-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px;align-items:start}
+.speaker-stage{position:relative;text-align:center;border:2px solid var(--navy)}
+.live-badge{display:inline-block;background:var(--red);color:#fff;padding:6px 10px;border-radius:4px;font-weight:900;letter-spacing:1px;margin-bottom:10px}
+.pitch-outline{display:grid;gap:8px;text-align:left;margin:18px 0}
+.pitch-outline>div{display:grid;grid-template-columns:170px 1fr;gap:10px;padding:10px 12px;background:#fff8e8;border-left:5px solid var(--mustard);font-size:18px}
+.pitch-outline span{color:#526173}
+.pitch-notes{background:#fffaf0}
+.pitch-notes .case-text{font-size:18px}
+.pitch-timer{margin:14px auto;width:170px;height:170px}
+.challenge-reveal{text-align:center;max-width:760px;margin:auto}
+@media(max-width:720px){
+  .onair-layout{grid-template-columns:1fr}
+  .pitch-notes{order:-1}
+  .pitch-notes .case-text{font-size:17px}
+  .pitch-outline>div{grid-template-columns:1fr;gap:2px;font-size:17px}
+  .pitch-timer{width:145px;height:145px;font-size:46px}
+}
+
+/* ===== Release Candidate UX ===== */
+.new-team-btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:4px;padding:7px 10px;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.4px}
+.revision-targets{margin-top:16px}
+.revision-buttons{display:flex;gap:9px;flex-wrap:wrap}
+@media(max-width:720px){
+  .new-team-btn{font-size:12px;padding:6px 8px}
+  .revision-buttons .chip{width:100%;text-align:left}
+}
+
+/* ===== Release Candidate v2: final feature clarity ===== */
+#ourTakeHelp{margin-top:8px;font-size:17px}
+#solutionQualityWarning{max-width:100%}
+.feature textarea[aria-label="Our Big Idea"]{min-height:110px}
+
+/* ===== RC3: final validation + true final-edition printing ===== */
+.print-only{display:none}
+@media print{
+  body{background:#fff!important}
+  .no-print,.topbar,.editor-strip,.footer-actions,.btn{display:none!important}
+  .screen{padding:0!important;max-width:none!important}
+  .print-only{display:block!important}
+  #printEdition{width:100%;margin:0;padding:0}
+  #printEdition .feature{display:block!important;box-shadow:none!important;border:2px solid #222!important}
+  #printEdition .feature textarea{display:none!important}
+}

@@ -49,3 +49,37 @@ Keep the same repository and GitHub Pages URL.
 - Team cases retain plural they/them/their.
 - Sam remains name-based because the case text does not establish Sam's gender; the app does not guess it.
 - Solution Desk prompts and examples adapt dynamically to the selected case.
+
+## v5.5 Final Presentation Polish
+- Added a reload-safe 60-second newsroom pitch timer.
+- Final Challenge stays locked until the pitch is completed.
+- The On Air screen uses compact Pitch Notes instead of the full newspaper feature.
+- Both pitch and 20-second huddle timers update only their timer elements, avoiding full-page rerenders.
+- Added a clear LIVE presentation state and improved mobile layout.
+
+## Release Candidate — full developer/methodology polish
+- Case-specific scaffolding for Hypothesis and Solution Desk.
+- Scaffolds guide thinking without giving ready-made answers.
+- Live field feedback updates immediately.
+- Case 3 is explicitly group-focused; Case 5 is now The Friend Group.
+- Real Revision Desk: Story, Recommendations, Reasoning, or Big Idea can be revised.
+- Changing the speaker resets pitch/challenge state.
+- Removed Finish Pitch Early; the 60-second pitch now runs to completion.
+- Added New Team control for shared classroom devices.
+- State version bumped to isolate the release candidate from stale browser data.
+
+## Release Candidate v2 — final feature UX
+- OUR TAKE now clearly explains what to write and why the button is locked.
+- Live helper text changes to ✓ Final message added.
+- Added lightweight duplicate/similarity checks for recommendations and reasons.
+- Draft PDF/print was removed; Print / Save as PDF is available after publication only.
+- State version bumped to prevent stale browser data after the update.
+
+## RC3 — final bug-fix pass
+- Added a complete final validation pass after Revision.
+- Final approval is blocked if Story, any Recommendation, any Reason, or Big Idea is empty.
+- Duplicate/similarity checks are rerun after Revision.
+- Revision screen shows explicit live Editor’s final-check feedback.
+- Print / Save as PDF now prints the actual final Teen Voices newspaper feature, not the Mission Accomplished screen.
+- Added aria-live status regions for key dynamic validation feedback.
+- State version bumped to avoid stale browser state.
