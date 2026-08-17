@@ -4,6 +4,7 @@ const CASES = [
     title: "New Beginnings",
     teaser: "Starting fresh. Finding your place.",
     name: "Alex",
+    pronoun:"he", objectPronoun:"him", possessive:"his",
     age: 16,
     traits: ["thoughtful","creative","quiet at first"],
     intro: "Alex has just started at a new school. Everyone seems friendly, but most students already have their own groups. Alex wants to make friends but does not know how to start.",
@@ -14,7 +15,7 @@ const CASES = [
       {t:"Alex wants to make friends but feels uncomfortable starting conversations.", e:true},
       {t:"Alex has a new backpack.", e:false}
     ],
-    challenge:"How can Alex feel more confident and find their place in the new school?",
+    challenge:"How can Alex feel more confident and find his place in the new school?",
     surprise:[
       "Which solution should Alex try first, and why?",
       "What might happen if Alex does nothing for the next month?",
@@ -26,6 +27,7 @@ const CASES = [
     title: "Taking the Lead",
     teaser: "Leader or boss? Finding the balance.",
     name: "Mia",
+    pronoun:"she", objectPronoun:"her", possessive:"her",
     age: 16,
     traits:["organised","ambitious","confident"],
     intro:"Mia is leading a school project. She wants the result to be excellent, but lately she has started making most decisions herself. Two team members have stopped sharing ideas.",
@@ -46,8 +48,9 @@ const CASES = [
   {
     id:3,
     title:"One Message, Two Meanings",
-    teaser:"What did they really mean?",
+    teaser:"What did Sam really mean?",
     name:"Sam",
+    pronoun:null, objectPronoun:null, possessive:null,
     age:16,
     traits:["direct","social","hard to read online"],
     intro:"In the class group chat, Sam writes: “Great. Thanks for telling me.” One friend thinks Sam is genuinely grateful. Another thinks Sam is annoyed because nobody told Sam about a change of plans earlier.",
@@ -70,6 +73,7 @@ const CASES = [
     title:"Different Minds, One Project",
     teaser:"Different people, stronger together.",
     name:"Team Delta",
+    pronoun:"they", objectPronoun:"them", possessive:"their",
     age:16,
     traits:["different work styles","strong opinions","good ideas"],
     intro:"Leo wants everything planned early. Eva gets her best ideas at the last minute. Max talks a lot during meetings. Nora is quieter but often notices problems others miss. The deadline is in three days.",
@@ -92,6 +96,7 @@ const CASES = [
     title:"Always Connected",
     teaser:"Online all the time... but not together?",
     name:"Max",
+    pronoun:"he", objectPronoun:"him", possessive:"his",
     age:16,
     traits:["curious","sociable","tech-loving"],
     intro:"Four friends meet after school. They have been looking forward to seeing each other all week, but during the first twenty minutes almost everyone keeps checking messages and notifications.",
@@ -111,8 +116,8 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 5;
-const STORAGE_KEY = "tv_final_state_v5";
+const STATE_VERSION = 6;
+const STORAGE_KEY = "tv_final_state_v6";
 const DEFAULT_STATE = {
   version:STATE_VERSION, step:0, teamSize:4, roles:["","","",""], selectedCase:null,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
@@ -211,14 +216,53 @@ function renderHypButtonOnly(){
   btn.onclick=ready?()=>go(6):null;
   document.querySelectorAll(".field-help").forEach(()=>{});
 }
-function solReady(){return state.solutions.every(v=>v.trim().length>=10)&&state.reasons.every(v=>v.trim().length>=10)}
-function solutions(){shell(newsroom(`<h2>Solution Desk</h2><p class="lead">Write <b>3 specific solutions</b> and explain why each could work.</p><div class="grid grid-3">${[0,1,2].map(i=>`<div class="card solution-card"><h3>Recommendation ${i+1}</h3><div class="field"><label>What should they do?</label><textarea oninput="state.solutions[${i}]=this.value;save()">${esc(state.solutions[i])}</textarea></div><div class="field"><label>Why could it work?</label><textarea oninput="state.reasons[${i}]=this.value;save()">${esc(state.reasons[i])}</textarea></div></div>`).join("")}</div><div class="notice notice-warn"><b>Editorial rule:</b> Avoid vague advice. Say what the person should actually do.</div><div class="footer-actions">${back()}<button class="btn btn-primary" ${solReady()?"":"disabled"} onclick="${solReady()?"go(7)":""}">Build Feature →</button></div>`))}
+function subjectPronoun(){
+  const x=c();
+  if(x.pronoun)return x.pronoun;
+  return x.name;
+}
+function objectPronoun(){
+  const x=c();
+  if(x.objectPronoun)return x.objectPronoun;
+  return x.name;
+}
+function solReady(){return state.solutions.every(v=>v.trim().length>0)&&state.reasons.every(v=>v.trim().length>0)}
+function updateSolutionUI(){
+  const btn=[...document.querySelectorAll("button")].find(b=>b.textContent.includes("Build Feature"));
+  if(btn){
+    const ready=solReady();
+    btn.disabled=!ready;
+    btn.onclick=ready?()=>go(7):null;
+  }
+}
+function solutionHelp(i,type){
+  const value=(type==="solution"?state.solutions[i]:state.reasons[i]).trim();
+  return `<div class="field-help ${value?"done":""}">${value?"✓ Idea added":type==="solution"?"Add one specific action.":"Explain why this action could help."}</div>`;
+}
+function solutions(){shell(newsroom(`<h2>Solution Desk</h2>
+<p class="lead">Create <b>3 practical recommendations</b>. For each one, give a specific action and a reason.</p>
+<div class="notice notice-info"><b>Newsroom brief:</b> One meaningful sentence in each required box is enough. All six boxes must be completed.</div>
+<div class="grid grid-3">${[0,1,2].map(i=>`<div class="card solution-card">
+<h3>Recommendation ${i+1}</h3>
+<div class="field">
+<label>What should ${subjectPronoun()} do? <span class="required-mark">Required</span></label>
+<textarea placeholder="Example: Start with one simple question about a shared interest." oninput="state.solutions[${i}]=this.value;save();updateSolutionUI()">${esc(state.solutions[i])}</textarea>
+${solutionHelp(i,"solution")}
+</div>
+<div class="field">
+<label>Why could it work? <span class="required-mark">Required</span></label>
+<textarea placeholder="Example: It gives ${objectPronoun()} an easy way to start a conversation." oninput="state.reasons[${i}]=this.value;save();updateSolutionUI()">${esc(state.reasons[i])}</textarea>
+${solutionHelp(i,"reason")}
+</div>
+</div>`).join("")}</div>
+<div class="notice notice-warn"><b>Editorial rule:</b> Avoid vague advice. Say what ${subjectPronoun()} should actually do.</div>
+<div class="footer-actions">${back()}<button class="btn btn-primary" ${solReady()?"":"disabled"} onclick="${solReady()?"go(7)":""}">Build Feature →</button></div>`))}
 function featureMarkup(editable=true){let x=c();return `<div class="feature"><div class="masthead"><div class="edition">SPECIAL EDITION • CASE #0${x.id}</div><div class="paper-name">TEEN VOICES</div><div>${x.title.toUpperCase()}</div></div><div class="feature-grid"><div><div class="feature-section"><h3>THE STORY</h3><p class="case-text">${esc(state.hypothesis||"—")}</p></div><div class="feature-section"><h3>WHAT THE EVIDENCE SHOWS</h3>${state.evidence.map(i=>`<p class="case-text">• ${esc(x.lines[i].t)}</p>`).join("")}</div></div><div><div class="feature-section"><h3>THE EDITORIAL TEAM RECOMMENDS</h3>${state.solutions.map((s,i)=>`<p class="case-text"><b>${i+1}. ${esc(s||"—")}</b></p><p class="reason">Why: ${esc(state.reasons[i]||"—")}</p>`).join("")}</div></div></div><div class="feature-section"><h3>OUR TAKE</h3>${editable?`<textarea aria-label="Our Big Idea" placeholder="One powerful sentence…" oninput="state.bigIdea=this.value;save()">${esc(state.bigIdea)}</textarea>`:`<p class="big-idea">${esc(state.bigIdea||"—")}</p>`}</div></div>`}
-function feature(){shell(newsroom(`<h2>Build Your Teen Voices Feature</h2><p class="lead">Turn your investigation into a publishable newsroom feature.</p>${featureMarkup(true)}<div class="footer-actions">${back()}<div class="cta-row" style="margin:0"><button class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button><button class="btn btn-primary" ${state.bigIdea.trim().length>=12?"":"disabled"} onclick="${state.bigIdea.trim().length>=12?"go(8)":""}">Send to Editor →</button></div></div>`))}
+function feature(){shell(newsroom(`<h2>Build Your Teen Voices Feature</h2><p class="lead">Turn your investigation into a publishable newsroom feature.</p>${featureMarkup(true)}<div class="footer-actions">${back()}<div class="cta-row" style="margin:0"><button class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button><button class="btn btn-primary" ${state.bigIdea.trim().length>0?"":"disabled"} onclick="${state.bigIdea.trim().length>0?"go(8)":""}">Send to Editor →</button></div></div>`))}
 function setCheck(i,v){state.reviewChecks[i]=v;save();render()}
-function reviewReady(){return state.reviewChecks.every(Boolean)&&state.review.strength.trim().length>=5&&state.review.suggestion.trim().length>=5}
+function reviewReady(){return state.reviewChecks.every(Boolean)&&state.review.strength.trim().length>0&&state.review.suggestion.trim().length>0}
 function review(){shell(newsroom(`<h2>Editor’s Desk Check</h2><p class="lead">Another team reviews your draft before publication.</p><div class="review-grid"><div class="card">${["The problem is supported by evidence.","The solutions are specific and realistic.","The reasoning is clear.","The Big Idea is useful for other teenagers."].map((t,i)=>`<label class="check-row"><input type="checkbox" ${state.reviewChecks[i]?"checked":""} onchange="setCheck(${i},this.checked)"> ${t}</label>`).join("")}</div><div class="card"><div class="field"><label>⭐ One strength</label><textarea oninput="state.review.strength=this.value;save()">${esc(state.review.strength)}</textarea></div><div class="field"><label>💡 One suggestion</label><textarea oninput="state.review.suggestion=this.value;save()">${esc(state.review.suggestion)}</textarea></div></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${reviewReady()?"":"disabled"} onclick="${reviewReady()?"go(9)":""}">Revise the Edition →</button></div>`))}
-function revision(){shell(newsroom(`<h2>Revision Desk</h2><p class="lead">Use the editor’s suggestion and make <b>one meaningful improvement</b> before publication.</p><div class="notice notice-info"><b>Editor’s suggestion:</b> ${esc(state.review.suggestion)}</div><div class="grid grid-2" style="margin-top:16px"><div>${featureMarkup(true)}</div><div class="card"><h3>Revision Check</h3><p class="case-text">Discuss what you changed and why it improves the feature.</p><div class="field"><label>What did you improve?</label><textarea id="revisionNote" oninput="state.revisionNote=this.value;save()">${esc(state.revisionNote||"")}</textarea></div><label class="check-row"><input type="checkbox" ${state.revisionComplete?"checked":""} onchange="state.revisionComplete=this.checked;save();render()"> We made a meaningful revision.</label></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${state.revisionComplete&&(state.revisionNote||"").trim().length>=8?"":"disabled"} onclick="${state.revisionComplete&&(state.revisionNote||"").trim().length>=8?"go(10)":""}">Approve Final Edition ✓</button></div>`))}
+function revision(){shell(newsroom(`<h2>Revision Desk</h2><p class="lead">Use the editor’s suggestion and make <b>one meaningful improvement</b> before publication.</p><div class="notice notice-info"><b>Editor’s suggestion:</b> ${esc(state.review.suggestion)}</div><div class="grid grid-2" style="margin-top:16px"><div>${featureMarkup(true)}</div><div class="card"><h3>Revision Check</h3><p class="case-text">Discuss what you changed and why it improves the feature.</p><div class="field"><label>What did you improve?</label><textarea id="revisionNote" oninput="state.revisionNote=this.value;save()">${esc(state.revisionNote||"")}</textarea></div><label class="check-row"><input type="checkbox" ${state.revisionComplete?"checked":""} onchange="state.revisionComplete=this.checked;save();render()"> We made a meaningful revision.</label></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${state.revisionComplete&&(state.revisionNote||"").trim().length>0?"":"disabled"} onclick="${state.revisionComplete&&(state.revisionNote||"").trim().length>0?"go(10)":""}">Approve Final Edition ✓</button></div>`))}
 function teamNames(){let n=state.teamSize===3?state.roles.slice(0,3):state.roles.slice(0,4);return n.map((x,i)=>x.trim()||`Student ${i+1}`)}
 function chooseSpeaker(i){state.speakerIndex=i;save();render()}
 function speaker(){let names=teamNames();shell(newsroom(`<h2>Choose Your Newsroom Speaker</h2><p class="lead">The feature belongs to the whole team. Choose <b>one representative</b> to present your shared work.</p><div class="speaker-grid">${names.map((n,i)=>`<button class="speaker-btn ${state.speakerIndex===i?"selected":""}" onclick="chooseSpeaker(${i})">🎙️ ${esc(n)}${state.speakerIndex===i?" ✓":""}</button>`).join("")}</div><div class="notice notice-info" style="margin-top:16px"><b>Everyone still contributes:</b> the team prepares the evidence, reasoning and response together.</div><div class="footer-actions">${back()}<button class="btn btn-primary" ${state.speakerIndex!==null?"":"disabled"} onclick="${state.speakerIndex!==null?"go(11)":""}">Go On Air →</button></div>`))}
@@ -233,7 +277,7 @@ function challenge(){
  <div class="footer-actions">${back()}<button class="btn btn-primary" ${state.huddleDone?"":"disabled"} onclick="${state.huddleDone?"go(13)":""}">Answer Complete ✓</button></div>`));
  if(state.huddleEndAt&&!state.huddleDone){timerHandle=setInterval(()=>{if(remaining()<=0){clearInterval(timerHandle);timerHandle=null;state.huddleDone=true;save()}render()},500)}
 }
-function reflect(){shell(newsroom(`<h2>Newsroom Debrief</h2><p class="lead">Reflect on the team’s thinking, not only the final product.</p><div class="grid grid-4"><div class="card"><h3>🔎 Analyse</h3><p class="sublead">We used evidence.</p></div><div class="card"><h3>💡 Create</h3><p class="sublead">We built realistic solutions.</p></div><div class="card"><h3>💬 Explain</h3><p class="sublead">We supported our ideas in English.</p></div><div class="card"><h3>🤝 Collaborate</h3><p class="sublead">We made team decisions.</p></div></div><div class="card" style="margin-top:16px"><div class="field"><label>What was your team’s strongest idea?</label><textarea oninput="state.reflection=this.value;save()">${esc(state.reflection)}</textarea></div><label>How ready was your team?</label><div class="team-size"><button class="chip ${state.readiness===1?"active":""}" onclick="state.readiness=1;save();render()">★ More practice</button><button class="chip ${state.readiness===2?"active":""}" onclick="state.readiness=2;save();render()">★★ Almost there</button><button class="chip ${state.readiness===3?"active":""}" onclick="state.readiness=3;save();render()">★★★ Mission accomplished</button></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${state.reflection.trim().length>=8&&state.readiness?"":"disabled"} onclick="${state.reflection.trim().length>=8&&state.readiness?"publishEdition()":""}">Publish Edition →</button></div>`))}
+function reflect(){shell(newsroom(`<h2>Newsroom Debrief</h2><p class="lead">Reflect on the team’s thinking, not only the final product.</p><div class="grid grid-4"><div class="card"><h3>🔎 Analyse</h3><p class="sublead">We used evidence.</p></div><div class="card"><h3>💡 Create</h3><p class="sublead">We built realistic solutions.</p></div><div class="card"><h3>💬 Explain</h3><p class="sublead">We supported our ideas in English.</p></div><div class="card"><h3>🤝 Collaborate</h3><p class="sublead">We made team decisions.</p></div></div><div class="card" style="margin-top:16px"><div class="field"><label>What was your team’s strongest idea?</label><textarea oninput="state.reflection=this.value;save()">${esc(state.reflection)}</textarea></div><label>How ready was your team?</label><div class="team-size"><button class="chip ${state.readiness===1?"active":""}" onclick="state.readiness=1;save();render()">★ More practice</button><button class="chip ${state.readiness===2?"active":""}" onclick="state.readiness=2;save();render()">★★ Almost there</button><button class="chip ${state.readiness===3?"active":""}" onclick="state.readiness=3;save();render()">★★★ Mission accomplished</button></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${state.reflection.trim().length>0&&state.readiness?"":"disabled"} onclick="${state.reflection.trim().length>0&&state.readiness?"publishEdition()":""}">Publish Edition →</button></div>`))}
 function publishEdition(){state.completed=true;state.step=14;save();render()}
 function published(){shell(newsroom(`<div class="complete"><div class="complete-stamp">EDITION PUBLISHED ✓</div><h1>MISSION ACCOMPLISHED</h1><p class="lead">Your Teen Voices Special Edition is ready.</p><div class="card"><p class="case-text">✓ Case investigated<br>✓ Evidence verified<br>✓ Solutions explained<br>✓ Feature revised<br>✓ Live challenge completed</p></div><div class="cta-row" style="justify-content:center"><button class="btn btn-secondary" onclick="window.print()">Print Final Feature</button><button class="btn btn-primary" onclick="go(7)">View Final Feature</button><button class="btn btn-secondary" onclick="resetMission()">New Mission</button></div></div>`))}
 function resetMission(){localStorage.removeItem(STORAGE_KEY);state=cloneDefault();render()}
