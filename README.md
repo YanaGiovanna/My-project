@@ -22,3 +22,11 @@ Replace the existing repository files with:
 - `app.js`
 
 Keep the same repository and GitHub Pages URL.
+
+
+## v5.1 UX fix
+- Removed hidden minimum-character requirements from the Hypothesis stage.
+- The first two fields are clearly marked **Required**.
+- The third field is marked **Optional challenge**.
+- One meaningful sentence is enough.
+- Added visible guidance and examples so students understand why the Continue button is inactive.

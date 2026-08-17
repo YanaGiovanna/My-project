@@ -175,8 +175,42 @@ function toggleEvidence(i){if(state.evidenceChecked)return;if(state.evidence.inc
 function checkEvidence(){if(state.evidence.length===2){state.evidenceChecked=true;save();render()}}
 function retryEvidence(){state.evidence=[];state.evidenceChecked=false;save();render()}
 function evidence(){let x=c(),good=state.evidence.length===2&&state.evidence.every(i=>x.lines[i].e);shell(newsroom(`<h2>Editor’s Evidence Board</h2><p class="lead">Select <b>two details</b> that best explain the real problem. Then verify your evidence.</p><div class="grid grid-2"><div class="card">${x.lines.map((l,i)=>{let cl=state.evidence.includes(i)?"chosen":"";if(state.evidenceChecked&&state.evidence.includes(i))cl+=l.e?" correct":" incorrect";return `<button class="evidence-line ${cl}" onclick="toggleEvidence(${i})">${l.t}${state.evidenceChecked&&state.evidence.includes(i)?(l.e?" ✓":" ↻"):""}</button>`}).join("")}</div><div class="card"><h3>Selected Evidence</h3>${state.evidence.length?state.evidence.map((i,j)=>`<div class="notice ${state.evidenceChecked?(x.lines[i].e?"notice-good":"notice-warn"):"notice-info"}"><b>Clue ${j+1}:</b> ${x.lines[i].t}</div><br>`).join(""):`<div class="notice notice-warn">Choose two clues.</div>`}${state.evidenceChecked?(good?`<div class="notice notice-good"><b>Verified ✓</b> These clues support your investigation.</div>`:`<div class="notice notice-warn"><b>Look again.</b> Does every clue really explain the problem?</div>`):""}</div></div><div class="footer-actions">${back()}${!state.evidenceChecked?`<button class="btn btn-primary" ${state.evidence.length===2?"":"disabled"} onclick="checkEvidence()">Verify Evidence ✓</button>`:good?`<button class="btn btn-primary" onclick="go(5)">Build Hypothesis →</button>`:`<button class="btn btn-secondary" onclick="retryEvidence()">Try Again ↻</button>`}</div>`))}
-function hypReady(){return state.hypothesis.trim().length>=15&&state.feelings.trim().length>=10}
-function hypothesis(){shell(newsroom(`<h2>Build the Story Hypothesis</h2><p class="lead">Understand the problem before giving advice.</p><div class="grid grid-2"><div class="card"><div class="field"><label>Why might this be happening?</label><textarea oninput="state.hypothesis=this.value;save()">${esc(state.hypothesis)}</textarea></div><div class="field"><label>How might the people involved feel?</label><textarea oninput="state.feelings=this.value;save()">${esc(state.feelings)}</textarea></div><div class="field"><label>Could someone see the situation differently?</label><textarea oninput="state.viewpoint=this.value;save()">${esc(state.viewpoint)}</textarea></div></div><div class="card toolkit"><h3>Language Desk</h3><p class="case-text">This might be happening because…<br>The evidence suggests that…<br>From another point of view…<br>However, … might feel…</p></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" ${hypReady()?"":"disabled"} onclick="${hypReady()?"go(6)":""}">Send to Solution Desk →</button></div>`))}
+function hypReady(){return state.hypothesis.trim().length>0&&state.feelings.trim().length>0}
+function hypothesis(){shell(newsroom(`<h2>Build the Story Hypothesis</h2>
+<p class="lead">Understand the problem before giving advice. Write your team’s ideas in the two required boxes.</p>
+<div class="grid grid-2">
+  <div class="card">
+    <div class="field">
+      <label>Why might this be happening? <span class="required-mark">Required</span></label>
+      <textarea placeholder="Example: Alex may feel shy because everything is new." oninput="state.hypothesis=this.value;save();renderHypButtonOnly()">${esc(state.hypothesis)}</textarea>
+      <div class="field-help ${state.hypothesis.trim().length?"done":""}">${state.hypothesis.trim().length?"✓ Idea added":"Add one clear idea to continue."}</div>
+    </div>
+    <div class="field">
+      <label>How might the people involved feel? <span class="required-mark">Required</span></label>
+      <textarea placeholder="Example: Alex may feel nervous or lonely." oninput="state.feelings=this.value;save();renderHypButtonOnly()">${esc(state.feelings)}</textarea>
+      <div class="field-help ${state.feelings.trim().length?"done":""}">${state.feelings.trim().length?"✓ Idea added":"Add one clear idea to continue."}</div>
+    </div>
+    <div class="field">
+      <label>Could someone see the situation differently? <span class="optional-mark">Optional challenge</span></label>
+      <textarea placeholder="Example: Other students may think Alex prefers to be alone." oninput="state.viewpoint=this.value;save()">${esc(state.viewpoint)}</textarea>
+      <div class="field-help">Use this box if your team can think of another point of view.</div>
+    </div>
+  </div>
+  <div class="card toolkit">
+    <h3>Language Desk</h3>
+    <p class="case-text">This might be happening because…<br>The evidence suggests that…<br>From another point of view…<br>However, … might feel…</p>
+    <div class="notice notice-info"><b>Tip:</b> You do not need a long answer. One meaningful sentence is enough.</div>
+  </div>
+</div>
+<div class="footer-actions">${back()}<button id="hypNext" class="btn btn-primary" ${hypReady()?"":"disabled"} onclick="${hypReady()?"go(6)":""}">Send to Solution Desk →</button></div>`))}
+function renderHypButtonOnly(){
+  const btn=document.getElementById("hypNext");
+  if(!btn)return;
+  const ready=hypReady();
+  btn.disabled=!ready;
+  btn.onclick=ready?()=>go(6):null;
+  document.querySelectorAll(".field-help").forEach(()=>{});
+}
 function solReady(){return state.solutions.every(v=>v.trim().length>=10)&&state.reasons.every(v=>v.trim().length>=10)}
 function solutions(){shell(newsroom(`<h2>Solution Desk</h2><p class="lead">Write <b>3 specific solutions</b> and explain why each could work.</p><div class="grid grid-3">${[0,1,2].map(i=>`<div class="card solution-card"><h3>Recommendation ${i+1}</h3><div class="field"><label>What should they do?</label><textarea oninput="state.solutions[${i}]=this.value;save()">${esc(state.solutions[i])}</textarea></div><div class="field"><label>Why could it work?</label><textarea oninput="state.reasons[${i}]=this.value;save()">${esc(state.reasons[i])}</textarea></div></div>`).join("")}</div><div class="notice notice-warn"><b>Editorial rule:</b> Avoid vague advice. Say what the person should actually do.</div><div class="footer-actions">${back()}<button class="btn btn-primary" ${solReady()?"":"disabled"} onclick="${solReady()?"go(7)":""}">Build Feature →</button></div>`))}
 function featureMarkup(editable=true){let x=c();return `<div class="feature"><div class="masthead"><div class="edition">SPECIAL EDITION • CASE #0${x.id}</div><div class="paper-name">TEEN VOICES</div><div>${x.title.toUpperCase()}</div></div><div class="feature-grid"><div><div class="feature-section"><h3>THE STORY</h3><p class="case-text">${esc(state.hypothesis||"—")}</p></div><div class="feature-section"><h3>WHAT THE EVIDENCE SHOWS</h3>${state.evidence.map(i=>`<p class="case-text">• ${esc(x.lines[i].t)}</p>`).join("")}</div></div><div><div class="feature-section"><h3>THE EDITORIAL TEAM RECOMMENDS</h3>${state.solutions.map((s,i)=>`<p class="case-text"><b>${i+1}. ${esc(s||"—")}</b></p><p class="reason">Why: ${esc(state.reasons[i]||"—")}</p>`).join("")}</div></div></div><div class="feature-section"><h3>OUR TAKE</h3>${editable?`<textarea aria-label="Our Big Idea" placeholder="One powerful sentence…" oninput="state.bigIdea=this.value;save()">${esc(state.bigIdea)}</textarea>`:`<p class="big-idea">${esc(state.bigIdea||"—")}</p>`}</div></div>`}
