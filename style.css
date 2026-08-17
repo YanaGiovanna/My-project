@@ -129,3 +129,97 @@ h3{font-size:25px;margin:0 0 12px}
   #printEdition .feature{display:block!important;box-shadow:none!important;border:2px solid #222!important}
   #printEdition .feature textarea{display:none!important}
 }
+
+/* ===== RC4: clearer peer-review UX ===== */
+.review-criterion{align-items:flex-start}
+.review-criterion span{display:block;flex:1}
+.review-criterion small{display:block;margin-top:5px;font-size:14px;font-weight:800;color:var(--muted)}
+.review-criterion.reviewed{background:rgba(18,53,82,.035);border-radius:6px}
+.review-grid .case-text{margin-top:6px}
+@media(max-width:720px){
+  .review-criterion small{font-size:13px}
+}
+
+/* ===== FINAL CLASS EDITION release ===== */
+.self-check-row{padding:14px 12px;border-bottom:1px solid var(--line);font-size:18px}
+.editor-preview{background:linear-gradient(180deg,#fffdf6,#fff8e7)}
+.question-lenses{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.question-lenses span{padding:10px;background:#fff7dc;border-left:4px solid var(--mustard);font-weight:900}
+.class-edition-banner{margin:18px auto;padding:14px 18px;max-width:760px;border:2px solid var(--navy);background:#fff4c7;font-size:20px;letter-spacing:.5px}
+.magazine-page{max-width:1000px;margin:24px auto;background:#f9f4e8;color:#172a3a;border:1px solid #c9bda5;box-shadow:0 12px 34px rgba(0,0,0,.12);padding:30px;font-family:Georgia,"Times New Roman",serif;text-align:left}
+.mag-coverline{display:flex;justify-content:space-between;border-top:8px solid #172a3a;border-bottom:2px solid #172a3a;padding:10px 0;font-family:Arial,sans-serif;font-weight:900;letter-spacing:1px}
+.mag-coverline span:first-child{font-size:28px}
+.mag-titleblock{padding:26px 0 18px;border-bottom:1px solid #b8aa91}
+.mag-titleblock h1{font-size:46px;line-height:1;margin:5px 0 10px;text-transform:uppercase}
+.mag-case{font-family:Arial,sans-serif;font-weight:900;color:#9a2d24}
+.mag-columns{display:grid;grid-template-columns:1fr 1.1fr;gap:32px;padding:24px 0}
+.magazine-page h3{font-family:Arial,sans-serif;font-size:17px;letter-spacing:1px;border-bottom:3px solid #d5a92f;padding-bottom:6px}
+.magazine-page p{font-size:18px;line-height:1.5}
+.mag-evidence{font-style:italic;border-left:4px solid #d5a92f;padding-left:12px}
+.mag-rec{display:grid;grid-template-columns:52px 1fr;gap:12px;margin:15px 0}
+.mag-rec>b{font-family:Arial,sans-serif;font-size:30px;color:#9a2d24}
+.mag-rec strong{font-size:19px}
+.mag-rec p{margin:5px 0;color:#4e5960}
+.mag-take{font-size:26px;line-height:1.35;margin:18px 0;padding:20px 24px;border-top:4px solid #172a3a;border-bottom:4px solid #172a3a;font-weight:700}
+.magazine-page footer{display:flex;justify-content:space-between;gap:16px;padding-top:14px;font-family:Arial,sans-serif;font-size:14px}
+@media(max-width:720px){
+ .magazine-page{padding:18px}
+ .mag-titleblock h1{font-size:34px}
+ .mag-columns{grid-template-columns:1fr;gap:10px}
+ .mag-coverline{display:block}
+ .mag-coverline span{display:block;margin:4px 0}
+ .mag-take{font-size:22px}
+ .question-lenses{grid-template-columns:1fr}
+}
+@media print{
+ .magazine-page{box-shadow:none!important;border:none!important;max-width:none!important;margin:0!important}
+ .mag-columns{grid-template-columns:1fr 1.1fr!important}
+}
+
+/* ===== TEACHER DESK + CLASS MAGAZINE BUILDER ===== */
+.top-actions{display:flex;gap:7px;align-items:center}
+.teacher-btn{border-color:#c9a13e;background:#fff4c7}
+.newsroom-name-card{margin:14px 0 18px;background:#fffaf0}
+.teacher-hero{padding:10px 0 18px}
+.teacher-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.file-btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.teacher-page-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.teacher-page-card{min-height:160px}
+.class-edition-preview{margin-top:24px}
+.class-cover,.class-contents,.back-cover{max-width:1000px;min-height:760px;margin:24px auto;background:#f5eedf;border:1px solid #c9bda5;box-shadow:0 12px 34px rgba(0,0,0,.12);padding:54px;position:relative;overflow:hidden}
+.class-cover{background:linear-gradient(135deg,#17344f 0 54%,#e4b846 54% 67%,#f5eedf 67%);color:#fff}
+.cover-kicker{font:900 15px Arial,sans-serif;letter-spacing:2px;border-top:4px solid #fff;border-bottom:1px solid rgba(255,255,255,.65);padding:10px 0;width:54%}
+.class-cover h1{font-size:104px;line-height:.78;color:#fff;margin:45px 0 22px;letter-spacing:-6px}
+.class-cover h2{font:900 31px Arial,sans-serif;color:#fff;letter-spacing:4px;margin:0}
+.cover-tagline{font:700 27px/1.35 Georgia,serif;margin:34px 0;width:45%}
+.cover-lines{position:absolute;right:45px;top:305px;width:35%;color:#172a3a}
+.cover-lines ul{list-style:none;padding:0;margin:0}
+.cover-lines li{font:800 18px/1.15 Arial,sans-serif;border-bottom:2px solid rgba(23,52,79,.25);padding:12px 0}
+.cover-lines li span{display:block;font-size:12px;color:#9a2d24;letter-spacing:1px;margin-bottom:3px}
+.cover-footer{position:absolute;left:54px;bottom:45px;font:700 14px Arial,sans-serif;letter-spacing:1px}
+.class-contents h1{font-size:58px;margin:18px 0 30px}
+.contents-row{display:grid;grid-template-columns:70px 1fr;gap:20px;border-top:1px solid #b8aa91;padding:17px 0}
+.contents-row>b{font:900 36px Arial,sans-serif;color:#9a2d24}
+.contents-row h3{margin:0;font-size:24px}.contents-row p{margin:4px 0;font-size:17px}
+.back-cover{display:grid;place-items:center;text-align:center;background:#17344f;color:#fff}
+.back-cover h1{color:#fff;font-size:70px;max-width:760px}.back-cover p{font-size:24px}
+.back-cover .complete-stamp{color:#e4b846;border-color:#e4b846}
+.class-mag-page{page-break-after:always}
+.magazine-print-page{page-break-after:always}
+@media(max-width:900px){.teacher-page-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+  .top-actions{gap:4px}.teacher-btn,.new-team-btn{font-size:11px;padding:5px 6px}
+  .teacher-page-list{grid-template-columns:1fr}
+  .class-cover,.class-contents,.back-cover{min-height:620px;padding:28px}
+  .class-cover h1{font-size:66px;letter-spacing:-3px}
+  .cover-kicker,.cover-tagline{width:62%}
+  .cover-lines{right:24px;top:300px;width:34%}
+  .cover-lines li{font-size:13px}
+}
+@media print{
+  .teacher-desk>.editor-strip,.teacher-desk>.teacher-hero,.teacher-desk>.notice,.teacher-desk>.teacher-page-list{display:none!important}
+  .teacher-desk .class-edition-preview{display:block!important;margin:0!important}
+  .class-cover,.class-contents,.back-cover,.class-mag-page{box-shadow:none!important;border:none!important;margin:0!important;max-width:none!important;min-height:0!important;break-after:page;page-break-after:always}
+  .class-mag-page{display:block!important}
+}

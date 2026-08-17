@@ -83,3 +83,31 @@ Keep the same repository and GitHub Pages URL.
 - Print / Save as PDF now prints the actual final Teen Voices newspaper feature, not the Mission Accomplished screen.
 - Added aria-live status regions for key dynamic validation feedback.
 - State version bumped to avoid stale browser state.
+
+## RC4 — Peer Review UX fix
+- Rebuilt Editor’s Desk Check so students no longer have to tick all four criteria.
+- Added `reviewTouched` state to distinguish “reviewed but needs work” from “not reviewed yet”.
+- Students must discuss all four criteria, but may leave criteria unticked when they genuinely need revision.
+- Added explicit instructions, per-criterion status, progress (0/4–4/4), and live completion feedback.
+- Strength and suggestion prompts now require specific product-focused feedback with sentence starters.
+- Unchecked criteria automatically appear in Revision Desk as “Criteria marked Needs work”.
+- State version bumped to prevent stale browser state.
+
+## FINAL CLASS EDITION architecture
+- Removed cross-team peer review from the app.
+- Added Final Editor's Check as the team's own self-assessment before going live.
+- Revision now loops back to the team's self-check.
+- Replaced random Surprise Question with a real Questions from the Newsroom workflow.
+- Audience teams ask the question; the presenting team gets a 20-second huddle before the reporter answers.
+- Each team publishes a designed magazine page for the shared Teen Voices Class Edition.
+- Final page is print/PDF ready; teacher can combine team pages into one class magazine.
+
+## Teacher Desk + Class Magazine Builder
+- Added optional Newsroom Name to each student team.
+- Published teams can download a compact `.team` page file for the Class Edition.
+- Added Teacher Desk in the app header.
+- Teacher Desk imports multiple `.team` files locally; no server/database/account is required.
+- Builds a magazine cover, contents page, all newsroom pages, and a back cover automatically.
+- Full Class Edition can be printed/saved as one PDF from the browser.
+- Imported Class Edition pages are stored locally in the teacher’s browser and can be removed/replaced.
+- Removed obsolete peer-review/surprise-question state and updated step labels.
