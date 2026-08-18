@@ -91,8 +91,8 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 13;
-const STORAGE_KEY = "tv_final_state_v13";
+const STATE_VERSION = 15;
+const STORAGE_KEY = "tv_final_state_v15";
 const DEFAULT_STATE = {
   version:STATE_VERSION, step:0, teamSize:4, teamName:"", roles:["","","",""], selectedCase:null,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
@@ -137,12 +137,21 @@ function progress(){return Math.round((state.step/(STEPS.length-1))*100)}
 function shell(content){
   document.getElementById("app").innerHTML=`<div class="topbar">
     <div class="brand"><div class="brand-mark">TV</div>Teen Voices Studio</div>
-    <div class="top-actions">
+    <div class="top-actions desktop-actions">
       <button class="new-team-btn" onclick="newTeam()">New Team</button>
       <button class="new-team-btn teacher-btn" onclick="openTeacherDesk()">Teacher Desk</button>
     </div>
+    <button class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false" onclick="toggleMobileMenu(this)">☰</button>
+    <div id="mobileMenu" class="mobile-menu">
+      <button onclick="newTeam()">New Team</button>
+      <button onclick="openTeacherDesk()">Teacher Desk</button>
+    </div>
     <div class="progress-wrap"><div class="progress-track"><div class="progress-bar" style="width:${teacherMode?100:progress()}%"></div></div><div class="progress-label">${teacherMode?"Class Edition Builder":STEPS[state.step]+" • "+progress()+"%"}</div></div>
   </div>${content}`;
+}
+function toggleMobileMenu(btn){
+  const menu=document.getElementById("mobileMenu");if(!menu)return;
+  const open=menu.classList.toggle("open");btn.setAttribute("aria-expanded",open?"true":"false");
 }
 const strip=`<div class="editor-strip"><span class="editor-label">NEWSROOM</span><span>CASE DESK • EVIDENCE • SOLUTIONS • FINAL PITCH</span></div>`;
 function go(n){if(timerHandle){clearInterval(timerHandle);timerHandle=null}state.step=n;save();render();window.scrollTo({top:0,behavior:"smooth"})}
@@ -172,11 +181,26 @@ function team(){
  <div class="team-size"><b>Team size:</b><button class="chip ${state.teamSize===3?"active":""}" onclick="state.teamSize=3;save();render()">3 students</button><button class="chip ${state.teamSize===4?"active":""}" onclick="state.teamSize=4;save();render()">4 students</button></div>
  <div class="grid grid-4">${roles.map((r,i)=>`<div class="card role-card"><div class="icon-circle">${r[0]}</div><h3>${r[1]}</h3><p class="sublead">${r[2]}</p><div class="field"><label>${state.teamSize===3&&i===3?"Combined with Language Coach":"Student name"}</label><input type="text" ${state.teamSize===3&&i===3?"disabled":""} value="${state.teamSize===3&&i===3?esc(state.roles[2]):esc(state.roles[i])}" oninput="state.roles[${i}]=this.value;save()"></div></div>`).join("")}</div>
  <div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(2)">Team Ready →</button></div>`))}
-function chooseCase(id){state.selectedCase=id;state.evidence=[];state.evidenceChecked=false;save();render()}
+function chooseCase(id){
+  if(state.selectedCase!==id){
+    const keep={teamSize:state.teamSize,teamName:state.teamName,roles:[...state.roles]};
+    state=cloneDefault();
+    state.teamSize=keep.teamSize;
+    state.teamName=keep.teamName;
+    state.roles=keep.roles;
+    state.selectedCase=id;
+    state.step=2;
+  }
+  save();render();
+}
 function cases(){shell(newsroom(`<h2>Newsroom Case Archive</h2><p class="lead">Choose one confidential story file for your editorial team.</p>
 <div class="grid grid-5">${CASES.map(x=>`<div class="case-card ${state.selectedCase===x.id?"selected":""}"><div class="case-tab"></div><div class="case-no">CASE #0${x.id} • CONFIDENTIAL</div><div class="case-title">${x.title.toUpperCase()}</div><div class="case-teaser">${x.teaser}</div><button class="btn ${state.selectedCase===x.id?"btn-green":"btn-secondary"}" onclick="chooseCase(${x.id})">${state.selectedCase===x.id?"Assigned ✓":"Open file"}</button></div>`).join("")}</div>
 <div class="footer-actions">${back()}<button class="btn btn-primary" ${state.selectedCase?"":"disabled"} onclick="${state.selectedCase?"go(3)":""}">Investigate Case →</button></div>`))}
-function profile(){let x=c();shell(newsroom(`<span class="kicker">CASE #0${x.id}</span><h2>${x.title}</h2><div class="card profile"><div><div class="avatar">CASE<br>FILE</div><p class="lead" style="text-align:center"><b>${x.name}, ${x.age}</b></p></div><div><h3>Story Brief</h3><div class="badges">${x.traits.map(t=>`<span class="badge">${t}</span>`).join("")}</div><p class="case-text">${x.intro}</p><div class="notice notice-warn"><b>Editorial challenge:</b> ${x.challenge}</div></div></div><div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(4)">Open Evidence Board →</button></div>`))}
+function profile(){let x=c();shell(newsroom(`<div class="case-heading"><span class="kicker">CASE #0${x.id}</span><div><span class="editor-label">STORY FILE</span><h2>${x.title}</h2></div></div>
+<div class="card profile profile-compact">
+  <div class="profile-meta"><div class="dossier-badge"><span>TV</span><b>CASE FILE</b></div><div><span class="editor-label">SUBJECT</span><p class="profile-name"><b>${x.name}, ${x.age}</b></p></div></div>
+  <div class="profile-story"><h3>Story Brief</h3><div class="badges">${x.traits.map(t=>`<span class="badge">${t}</span>`).join("")}</div><p class="case-text">${x.intro}</p><div class="notice notice-warn"><b>Editorial challenge:</b> ${x.challenge}</div></div>
+</div><div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(4)">Open Evidence Board →</button></div>`))}
 function toggleEvidence(i){if(state.evidenceChecked)return;if(state.evidence.includes(i))state.evidence=state.evidence.filter(v=>v!==i);else if(state.evidence.length<2)state.evidence.push(i);save();render()}
 function checkEvidence(){if(state.evidence.length===2){state.evidenceChecked=true;save();render()}}
 function retryEvidence(){state.evidence=[];state.evidenceChecked=false;save();render()}
@@ -287,32 +311,65 @@ ${solutionHelp(i,"reason")}
 function normalizeText(s){
   return String(s||"").toLowerCase().replace(/[^a-z0-9а-яё\s]/gi," ").replace(/\s+/g," ").trim();
 }
-function similarText(a,b){
-  const A=normalizeText(a), B=normalizeText(b);
+function wordSet(s){return new Set(normalizeText(s).split(" ").filter(w=>w.length>3))}
+function overlapScore(a,b){
+  const A=wordSet(a),B=wordSet(b);if(!A.size||!B.size)return 0;
+  let common=0;A.forEach(w=>{if(B.has(w))common++});
+  return common/Math.min(A.size,B.size);
+}
+function nearDuplicate(a,b){
+  const A=normalizeText(a),B=normalizeText(b);
   if(!A||!B)return false;
   if(A===B)return true;
-  const aw=new Set(A.split(" ").filter(w=>w.length>2));
-  const bw=new Set(B.split(" ").filter(w=>w.length>2));
-  if(!aw.size||!bw.size)return false;
-  let common=0; aw.forEach(w=>{if(bw.has(w))common++});
-  const score=common/Math.max(aw.size,bw.size);
-  return score>=0.8;
+  // Only flag long answers when nearly all meaningful words repeat.
+  return A.length>=18&&B.length>=18&&overlapScore(A,B)>=0.92;
+}
+function solutionQualityData(){
+  const actionReason=[];
+  const duplicateActions=[];
+  for(let i=0;i<3;i++){
+    if(nearDuplicate(state.solutions[i],state.reasons[i]))actionReason.push(i);
+  }
+  for(let i=0;i<3;i++)for(let j=i+1;j<3;j++){
+    if(nearDuplicate(state.solutions[i],state.solutions[j]))duplicateActions.push([i,j]);
+  }
+  return {actionReason,duplicateActions};
 }
 function solutionQualityIssues(){
-  const issues=[];
-  for(let i=0;i<3;i++){
-    if(similarText(state.solutions[i],state.reasons[i])){
-      issues.push(`Recommendation ${i+1}: the action and the reason are too similar.`);
-    }
-  }
-  for(let i=0;i<3;i++){
-    for(let j=i+1;j<3;j++){
-      if(similarText(state.solutions[i],state.solutions[j])){
-        issues.push(`Recommendations ${i+1} and ${j+1} look too similar.`);
-      }
-    }
-  }
+  const q=solutionQualityData(),issues=[];
+  if(q.actionReason.length)issues.push(`Explain WHY for recommendation${q.actionReason.length>1?"s":""} ${q.actionReason.map(i=>i+1).join(", ")} — don’t repeat the action.`);
+  if(q.duplicateActions.length)issues.push("Make the three recommendations clearly different from one another.");
   return issues;
+}
+function editorExample(){
+  const id=c()?.id||1;
+  const examples={
+    1:{do:"Ask one classmate a simple question about a shared interest.",why:"This gives Alex an easy, low-pressure way to start a conversation."},
+    2:{do:"Ask every teammate to share one idea before making a decision.",why:"This helps quieter team members contribute and makes the project more collaborative."},
+    3:{do:"Ask what Sam meant before reacting to the message.",why:"This reduces assumptions and can prevent a misunderstanding from growing."},
+    4:{do:"Agree on one team rule that uses different working styles.",why:"This helps the group use each member’s strengths instead of treating differences as a problem."},
+    5:{do:"Put phones away for the first 20 minutes together.",why:"This gives everyone uninterrupted time to talk face to face."}
+  };
+  return examples[id]||examples[1];
+}
+function editorFeedbackMarkup(){
+  const q=solutionQualityData();
+  if(!q.actionReason.length&&!q.duplicateActions.length){
+    return `<div class="notice notice-good"><b>Editor’s check ✓</b> Your recommendations are ready for the next stage.</div>`;
+  }
+  let blocks=[];
+  if(q.duplicateActions.length){
+    blocks.push(`<div class="editor-action"><span class="editor-action-no">1</span><div><b>Use different actions</b><p>Give three clearly different pieces of advice.</p></div></div>`);
+  }
+  if(q.actionReason.length){
+    blocks.push(`<div class="editor-action"><span class="editor-action-no">${blocks.length+1}</span><div><b>Explain WHY</b><p>The reason should explain the expected result, not repeat the recommendation.</p></div></div>`);
+  }
+  return `<div class="editor-coach">
+    <span class="editor-label">EDITOR’S NOTE</span><h3>Make your recommendations stronger</h3>
+    ${blocks.join("")}
+    ${(()=>{const ex=editorExample();return `<div class="editor-example"><b>Example</b><br><b>Do:</b> ${esc(ex.do)}<br><b>Why:</b> ${esc(ex.why)}</div>`})()}
+    <button class="btn btn-secondary editor-revise-btn" onclick="go(6)">Revise Recommendations →</button>
+  </div>`;
 }
 function finalValidationIssues(){
   const issues=[];
@@ -338,9 +395,7 @@ function updateFeatureUI(){
   const warn=document.getElementById("solutionQualityWarning");
   if(warn){
     const issues=solutionQualityIssues();
-    warn.innerHTML=issues.length
-      ? `<div class="notice notice-warn"><b>Editor’s note:</b><br>${issues.map(x=>"• "+esc(x)).join("<br>")}<br><br>Add three different actions and explain why each one could work.</div>`
-      : `<div class="notice notice-good"><b>Editor’s check ✓</b> Your three recommendations are distinct enough to continue.</div>`;
+    warn.innerHTML=editorFeedbackMarkup();
   }
   if(btn){
     const ready=finalFeatureReady();
@@ -383,9 +438,7 @@ function feature(){
   <p class="lead">Turn your investigation into a publishable newsroom feature.</p>
   ${featureMarkup(true)}
   <div id="solutionQualityWarning" role="status" aria-live="polite" style="margin-top:16px">
-    ${issues.length
-      ? `<div class="notice notice-warn"><b>Editor’s note:</b><br>${issues.map(x=>"• "+esc(x)).join("<br>")}<br><br>Add three different actions and explain why each one could work.</div>`
-      : `<div class="notice notice-good"><b>Editor’s check ✓</b> Your three recommendations are distinct enough to continue.</div>`}
+    ${editorFeedbackMarkup()}
   </div>
   <div class="footer-actions">${back()}
     <button id="sendEditorBtn" class="btn btn-primary" ${finalFeatureReady()?"":"disabled"} onclick="${finalFeatureReady()?"go(8)":""}">Send to Editor →</button>
@@ -416,7 +469,7 @@ function review(){
       <p class="case-text"><b>Story:</b> ${esc(state.hypothesis||"—")}</p>
       <p class="case-text"><b>Recommendations:</b><br>${state.solutions.map((s,i)=>`${i+1}. ${esc(s||"—")}`).join("<br>")}</p>
       <p class="case-text"><b>Big Idea:</b> ${esc(state.bigIdea||"—")}</p>
-      ${issues.length?`<div class="notice notice-warn"><b>Automatic check:</b><br>${issues.map(x=>"• "+esc(x)).join("<br>")}</div>`:`<div class="notice notice-good"><b>Automatic check ✓</b> Required parts are complete.</div>`}
+      ${issues.length?editorFeedbackMarkup():`<div class="notice notice-good"><b>Automatic check ✓</b> Required parts are complete.</div>`}
     </div>
   </div>
   <div class="footer-actions">${back()}
@@ -565,6 +618,10 @@ function updateHuddleTimer(){
     const done=document.getElementById("answerDoneBtn");if(done){done.disabled=false;done.onclick=()=>go(13)}
   }
 }
+function markQuestionReceived(){
+  if(!state.audienceQuestion.trim())state.audienceQuestion="Live question from the audience";
+  save();startHuddle();
+}
 function challenge(){
   let name=teamNames()[state.speakerIndex],r=remaining();
   if(state.huddleEndAt&&r<=0&&!state.huddleDone){state.huddleDone=true;save()}
@@ -581,11 +638,13 @@ function challenge(){
     </div>
     <div class="card">
       <h3>Question for ${esc(name)}</h3>
-      <p class="case-text">Type or briefly note the question asked by another team.</p>
-      <textarea placeholder="Audience question…" oninput="saveAudienceQuestion(this.value);document.getElementById('huddleStart').disabled=!this.value.trim()">${esc(state.audienceQuestion)}</textarea>
+      <p class="case-text">Another team asks the question aloud. Typing it here is optional.</p>
+      <textarea placeholder="Optional: type the audience question…" oninput="saveAudienceQuestion(this.value)">${esc(state.audienceQuestion==="Live question from the audience"?"":state.audienceQuestion)}</textarea>
       <div id="huddleArea">
       ${!state.huddleEndAt
-        ? `<button id="huddleStart" class="btn btn-primary" ${state.audienceQuestion.trim()?"":"disabled"} onclick="startHuddle()">Start 20-Second Team Huddle</button>
+        ? `<div class="question-actions">
+             <button class="btn btn-primary" onclick="markQuestionReceived()">Question Received → Start 20 Sec</button>
+           </div>
            <div class="notice notice-info"><b>Everyone thinks. Everyone contributes.</b> The reporter may return to the team before answering.</div>`
         : !state.huddleDone
           ? `<div class="timer" id="huddleTimer">${r}</div><div class="notice notice-info"><b>TEAM HUDDLE:</b> Build one strong shared answer.</div>`
@@ -625,7 +684,7 @@ function magazinePage(){
     <footer><b>${esc(team)}</b><span>Teen Voices Newsroom • Page ready for the Class Edition</span></footer>
   </article>`;
 }
-function printFinalFeature(){window.print()}
+
 function published(){
  shell(newsroom(`
  <div class="complete no-print">
@@ -668,7 +727,7 @@ function downloadTeamPageFile(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=url;
-  a.download=`TeenVoices_Case${String(data.caseId).padStart(2,"0")}_${safeFileName(data.teamName)}.team`;
+  a.download=`TeenVoices_Case${String(data.caseId).padStart(2,"0")}_${safeFileName(data.teamName)}.json`;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
 }
@@ -738,9 +797,9 @@ function classContents(){
 function teacherDesk(){
   shell(`<main class="screen teacher-desk">${strip}
     <div class="teacher-hero"><span class="kicker">TEACHER DESK</span><h1>CLASS MAGAZINE BUILDER</h1>
-    <p class="lead">Import each newsroom’s <b>.team</b> page file. The app builds one Teen Voices Class Edition locally in this browser — no accounts, database or server.</p></div>
+    <p class="lead">Import each newsroom’s <b>.json</b> page file. The app builds one Teen Voices Class Edition locally in this browser — no accounts, database or server.</p></div>
     <div class="teacher-actions card no-print">
-      <label class="btn btn-primary file-btn">Import Team Pages<input type="file" accept=".team,.json,application/json" multiple onchange="importTeamFiles(this)"></label>
+      <label class="btn btn-primary file-btn">Import Team Pages<input type="file" accept=".json,.team,application/json" multiple onchange="importTeamFiles(this)"></label>
       <button class="btn btn-secondary" ${teacherPages.length?"":"disabled"} onclick="window.print()">Print / Save Full Class Edition as PDF</button>
       <button class="btn btn-secondary" ${teacherPages.length?"":"disabled"} onclick="clearTeacherMagazine()">Clear Builder</button>
       <button class="btn btn-secondary" onclick="closeTeacherDesk()">← Back to Student App</button>

@@ -111,3 +111,20 @@ Keep the same repository and GitHub Pages URL.
 - Full Class Edition can be printed/saved as one PDF from the browser.
 - Imported Class Edition pages are stored locally in the teacher’s browser and can be removed/replaced.
 - Removed obsolete peer-review/surprise-question state and updated step labels.
+
+## Mobile UX polish
+- Replaced the oversized CASE FILE placeholder with a compact editorial dossier header.
+- Reworked automated recommendation feedback into 1–2 actionable coaching points instead of a long diagnostic list.
+- Added a concrete Do / Why example and a direct Revise Recommendations action.
+- Made similarity detection conservative so normal student answers are not blocked by superficial word overlap.
+- Added a mobile hamburger menu so New Team and Teacher Desk remain accessible on narrow iPhone screens.
+- Improved mobile typography and vertical density on the Case Profile screen.
+
+## FINAL 1.0 technical freeze pass
+- Switching to a new case now clears all case-specific work while preserving team setup.
+- Editor coaching examples are case-specific.
+- Removed duplicate print function.
+- Audience-question typing is optional; the 20-second huddle can start immediately after a live question.
+- Teacher Desk exports standard `.json` team-page files for better Safari/Finder compatibility and still accepts legacy `.team` files.
+- Print CSS targets A4 and avoids splitting recommendation/evidence blocks where possible.
+- State version bumped to isolate the final build from stale browser state.

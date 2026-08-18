@@ -223,3 +223,54 @@ h3{font-size:25px;margin:0 0 12px}
   .class-cover,.class-contents,.back-cover,.class-mag-page{box-shadow:none!important;border:none!important;margin:0!important;max-width:none!important;min-height:0!important;break-after:page;page-break-after:always}
   .class-mag-page{display:block!important}
 }
+
+/* ===== MOBILE UX POLISH ===== */
+.case-heading{display:flex;align-items:flex-end;gap:16px;margin:8px 0 18px}
+.case-heading h2{margin:4px 0 0}
+.profile-compact{display:grid;grid-template-columns:220px 1fr;gap:28px;align-items:start}
+.profile-meta{display:flex;flex-direction:column;gap:18px}
+.dossier-badge{height:105px;border:2px solid var(--navy);background:#f3ecdd;display:flex;align-items:center;justify-content:center;gap:12px}
+.dossier-badge span{display:grid;place-items:center;width:48px;height:48px;background:var(--navy);color:#fff;font-weight:900}
+.dossier-badge b{font-size:20px;letter-spacing:1px}
+.profile-name{font-size:22px;margin:4px 0}
+.profile-story h3{margin-top:0}
+.editor-coach{background:#fff4cf;border-left:6px solid #e4b846;padding:20px 22px;border-radius:12px;text-align:left}
+.editor-coach h3{font-size:26px;margin:7px 0 16px}
+.editor-action{display:grid;grid-template-columns:38px 1fr;gap:12px;padding:10px 0;border-top:1px solid rgba(23,52,79,.16)}
+.editor-action-no{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900}
+.editor-action p{margin:4px 0;font-size:18px;line-height:1.4}
+.editor-example{margin:14px 0;padding:14px;background:#fff;border:1px solid #d8caa8;font-size:17px;line-height:1.5}
+.editor-revise-btn{margin-top:5px}
+.mobile-menu-btn,.mobile-menu{display:none}
+@media(max-width:720px){
+  .desktop-actions{display:none!important}
+  .mobile-menu-btn{display:block;position:absolute;right:18px;top:18px;width:48px;height:48px;border:1px solid #d5cbb8;border-radius:10px;background:#fff;color:var(--navy);font-size:25px;font-weight:900;z-index:12}
+  .mobile-menu{display:none;position:absolute;right:18px;top:72px;z-index:30;background:#fff;border:1px solid #d5cbb8;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.14);overflow:hidden;min-width:160px}
+  .mobile-menu.open{display:block}
+  .mobile-menu button{display:block;width:100%;border:0;border-bottom:1px solid #eee;background:#fff;padding:14px 16px;text-align:left;font-weight:900;color:var(--navy)}
+  .topbar{position:relative;padding-right:78px}
+  .progress-wrap{max-width:95px;margin-left:auto}
+  .progress-label{display:none}
+  .case-heading{align-items:flex-start;gap:10px;flex-direction:column}
+  .case-heading .kicker{font-size:18px;padding:8px 12px}
+  .case-heading h2{font-size:38px;line-height:1.02}
+  .profile-compact{grid-template-columns:1fr;gap:18px}
+  .profile-meta{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:14px}
+  .dossier-badge{height:72px}
+  .dossier-badge span{width:36px;height:36px;font-size:14px}
+  .dossier-badge b{font-size:15px}
+  .profile-name{font-size:20px}
+  .profile-story .case-text{font-size:20px;line-height:1.55}
+  .editor-coach{padding:18px 16px}
+  .editor-coach h3{font-size:24px}
+  .editor-action p,.editor-example{font-size:18px}
+}
+
+/* ===== FINAL 1.0 technical freeze pass ===== */
+.question-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+@page{size:A4;margin:10mm}
+@media print{
+  .mag-rec,.mag-evidence,.mag-take,.feature-section{break-inside:avoid;page-break-inside:avoid}
+  .magazine-page{width:auto!important;max-width:none!important}
+  .class-cover,.class-contents,.back-cover,.class-mag-page{break-inside:avoid;page-break-inside:avoid}
+}
