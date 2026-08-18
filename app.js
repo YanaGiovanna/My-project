@@ -91,10 +91,10 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 16;
-const STORAGE_KEY = "tv_final_state_v16";
+const STATE_VERSION = 18;
+const STORAGE_KEY = "tv_final_state_v18";
 const DEFAULT_STATE = {
-  version:STATE_VERSION, step:0, teamSize:4, teamName:"", roles:["","","",""], selectedCase:null,
+  version:STATE_VERSION, step:0, teamSize:4, teamName:"", teamId:"", roles:["","","",""], selectedCase:null, pageSubmitted:false,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
   solutions:["","",""], reasons:["","",""], bigIdea:"",
   reviewChecks:[false,false,false,false], audienceQuestion:"",
@@ -104,7 +104,7 @@ const DEFAULT_STATE = {
 const STEPS=["Briefing","Team","Cases","Profile","Evidence","Hypothesis","Solutions","Feature","Editor Check","Revision","Reporter","On Air","Questions","Reporter Note","Published"];
 let timerHandle=null;
 let teacherMode=false;
-const TEACHER_STORAGE_KEY="tv_class_edition_pages_v1";
+const TEACHER_STORAGE_KEY="tv_class_edition_pages_v2";
 let teacherPages=loadTeacherPages();
 function loadTeacherPages(){
   try{return JSON.parse(localStorage.getItem(TEACHER_STORAGE_KEY)||"[]")}catch(e){return []}
@@ -123,6 +123,15 @@ function loadState(){
 }
 let state=loadState();
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function ensureTeamId(){
+  if(!state.teamId){
+    state.teamId=(globalThis.crypto&&crypto.randomUUID)
+      ? crypto.randomUUID()
+      : "team-"+Date.now()+"-"+Math.random().toString(36).slice(2,10);
+    save();
+  }
+  return state.teamId;
+}
 function newTeam(){
   const ok=window.confirm("Start a new mission? Current progress on this device will be cleared.");
   if(!ok)return;
@@ -168,7 +177,7 @@ function render(){
 function briefing(){shell(newsroom(`<section class="hero"><span class="kicker">FINAL MISSION</span><h1>THE REAL TEEN GUIDE</h1>
 <p class="lead"><b>One newsroom. One case. One page of our class magazine.</b></p>
 <p class="lead">Investigate a teen situation, use evidence, create realistic solutions and publish one page of the <b>Teen Voices Class Edition</b>.</p>
-<div class="grid grid-4"><div class="step-box"><div class="step-num">1</div><p><b>INVESTIGATE</b><br>Understand the case.</p></div><div class="step-box"><div class="step-num">2</div><p><b>VERIFY</b><br>Use evidence, not guesses.</p></div><div class="step-box"><div class="step-num">3</div><p><b>CREATE</b><br>Build specific solutions.</p></div><div class="step-box"><div class="step-num">4</div><p><b>GO LIVE</b><br>Pitch and face a challenge.</p></div></div>
+<div class="mission-route"><div><span>1</span><b>CASE</b><small>Investigate</small></div><div class="route-arrow">→</div><div><span>2</span><b>SOLUTIONS</b><small>Create + explain</small></div><div class="route-arrow">→</div><div><span>3</span><b>PITCH</b><small>Share + answer</small></div><div class="route-arrow">→</div><div><span>4</span><b>PUBLISH</b><small>Join the Class Edition</small></div></div>
 <div class="cta-row"><button class="btn btn-primary" onclick="go(1)">Enter the Newsroom →</button></div></section>`))}
 function team(){
  const roles=[["🔎","CASE DETECTIVE","Find and verify evidence."],["💡","IDEA BUILDER","Develop realistic solutions."],["💬","LANGUAGE COACH","Support clear, accurate English."],["🎙️","VOICE EDITOR","Shape the final pitch."]];
@@ -183,12 +192,14 @@ function team(){
  <div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(2)">Team Ready →</button></div>`))}
 function chooseCase(id){
   if(state.selectedCase!==id){
-    const keep={teamSize:state.teamSize,teamName:state.teamName,roles:[...state.roles]};
+    const keep={teamSize:state.teamSize,teamName:state.teamName,teamId:state.teamId,roles:[...state.roles]};
     state=cloneDefault();
     state.teamSize=keep.teamSize;
     state.teamName=keep.teamName;
+    state.teamId=keep.teamId;
     state.roles=keep.roles;
     state.selectedCase=id;
+    state.pageSubmitted=false;
     state.step=2;
   }
   save();render();
@@ -442,8 +453,8 @@ function featureMarkup(editable=true){
     </div>
     <div class="feature-section"><h3>OUR TAKE</h3>
       ${editable
-        ? `<p class="case-text">Write one sentence that sums up your team’s most important message.</p>
-           <textarea aria-label="Our Big Idea" placeholder="Our team believes that…" oninput="state.bigIdea=this.value;save();updateFeatureUI()">${esc(state.bigIdea)}</textarea>
+        ? `<p class="case-text"><b>What is your team’s main advice for ${esc(c().name)}?</b><br>Sum up your three recommendations in one sentence.</p>
+           <textarea aria-label="Our Big Idea" placeholder="Our team believes that ${esc(c().name)} should…" oninput="state.bigIdea=this.value;save();updateFeatureUI()">${esc(state.bigIdea)}</textarea>
            <div id="ourTakeHelp" role="status" aria-live="polite" class="field-help ${state.bigIdea.trim().length?"done":""}">${state.bigIdea.trim().length?"✓ Final message added":"Required • Add your team’s final message to continue."}</div>`
         : `<p class="big-idea">${esc(state.bigIdea||"—")}</p>`}
     </div>
@@ -490,11 +501,19 @@ function review(){
     </div>
   </div>
   <div class="footer-actions">${back()}
-    <button class="btn btn-secondary" onclick="state.revisionTarget='';state.revisionNote='';state.revisionComplete=false;save();go(9)">Revise Our Feature</button>
+    <button class="btn btn-secondary" onclick="startRevision()">Revise Our Feature</button>
     <button class="btn btn-primary" ${selfCheckReady()&&!issues.length?"":"disabled"} onclick="${selfCheckReady()&&!issues.length?"go(10)":""}">Editor Approved — Choose Reporter →</button>
   </div>`))
 }
-function chooseRevisionTarget(target){state.revisionTarget=target;state.revisionComplete=false;save();render()}
+function startRevision(){
+  state.reviewChecks=[false,false,false,false];
+  state.revisionTarget="";
+  state.revisionNote="";
+  state.revisionComplete=false;
+  save();
+  go(9);
+}
+function chooseRevisionTarget(target){state.reviewChecks=[false,false,false,false];state.revisionTarget=target;state.revisionComplete=false;save();render()}
 function revisionEditor(){
   const t=state.revisionTarget;
   if(!t)return `<div class="notice notice-warn"><b>Choose one area to improve.</b> Use the editor’s suggestion to decide where revision is most useful.</div>`;
@@ -613,7 +632,7 @@ function onAir(){
       <p class="case-text"><b>Big Idea:</b> ${esc(state.bigIdea||"—")}</p>
     </div>
   </div>
-  <div class="footer-actions">${back()}<button id="challengeBtn" class="btn btn-red" ${state.pitchDone?"":"disabled"} onclick="${state.pitchDone?"go(12)":""}">Reveal Final Challenge →</button></div>`))
+  <div class="footer-actions">${back()}<button id="challengeBtn" class="btn btn-red" ${state.pitchDone?"":"disabled"} onclick="${state.pitchDone?"go(12)":""}">Questions from the Newsroom →</button></div>`))
   if(state.pitchEndAt&&!state.pitchDone){
     if(timerHandle)clearInterval(timerHandle);
     timerHandle=setInterval(updatePitchTimer,250);
@@ -706,28 +725,31 @@ function published(){
  shell(newsroom(`
  <div class="complete no-print">
    <div class="complete-stamp">PAGE PUBLISHED ✓</div>
-   <h1>Your Page Is in the Teen Voices Class Edition</h1>
-   <p class="lead">Every newsroom contributes one page. When all teams finish, the class has one shared magazine.</p>
+   <h1>Your Teen Voices Page Is Ready</h1>
+   <p class="lead">Your newsroom has finished its page. Now submit the page file to the teacher so it can join the shared Class Edition.</p>
    <div class="class-edition-banner"><b>EVERY TEAM → ONE PAGE → ONE CLASS MAGAZINE</b></div>
    ${magazinePage()}
    <div class="cta-row" style="justify-content:center">
-     <button class="btn btn-primary" onclick="printFinalFeature()">Save Our Magazine Page as PDF</button><button class="btn btn-secondary" onclick="downloadTeamPageFile()">Send Page to Class Edition</button>
+     <button class="btn btn-secondary" onclick="printFinalFeature()">Save Our Page as PDF</button>
+     <button class="btn btn-primary submit-teacher-btn" onclick="downloadTeamPageFile()">Export Page for Teacher Desk →</button>
      <button class="btn btn-secondary" onclick="resetMission()">New Mission</button>
    </div>
-   <div class="notice notice-info"><b>Class Edition:</b> Save your page as PDF or send the page file to your teacher. The Teacher Desk combines all team pages into one magazine.</div>
+   ${state.pageSubmitted
+      ? `<div class="submission-success" role="status" aria-live="polite"><span>✓</span><div><b>TEAM PAGE READY</b><p>Your Class Edition file has been downloaded. Give this <b>.json</b> file to your teacher. The teacher will import it into Teacher Desk.</p></div></div>`
+      : `<div class="notice notice-info"><b>How submission works:</b> “Export Page for Teacher Desk” downloads one small <b>.json</b> page file. Give that file to your teacher; no account or database is required.</div>`}
  </div>
  <section id="printEdition" class="print-only" aria-label="Teen Voices Class Edition page">${magazinePage()}</section>`))
 }
-
 function teamPageData(){
   const x=c();
   return {
-    schema:"teen-voices-team-page-v1",
+    schema:"teen-voices-team-page-v2",
     exportedAt:new Date().toISOString(),
+    teamId:ensureTeamId(),
     caseId:x.id,
     caseTitle:x.title,
     teaser:x.teaser,
-    teamName:(state.teamName||"Teen Voices Newsroom").trim(),
+    teamName:(state.teamName||`Teen Voices Newsroom ${ensureTeamId().slice(0,4).toUpperCase()}`).trim(),
     story:state.hypothesis,
     evidence:state.evidence.map(i=>x.lines[i].t),
     solutions:[...state.solutions],
@@ -747,11 +769,12 @@ function downloadTeamPageFile(){
   a.download=`TeenVoices_Case${String(data.caseId).padStart(2,"0")}_${safeFileName(data.teamName)}.json`;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
+  state.pageSubmitted=true;save();render();
 }
 function openTeacherDesk(){teacherMode=true;render();window.scrollTo({top:0,behavior:"smooth"})}
 function closeTeacherDesk(){teacherMode=false;render();window.scrollTo({top:0,behavior:"smooth"})}
 function validateTeamPage(data){
-  return data && data.schema==="teen-voices-team-page-v1" &&
+  return data && (data.schema==="teen-voices-team-page-v2" || data.schema==="teen-voices-team-page-v1") &&
     Number.isInteger(data.caseId) && typeof data.caseTitle==="string" &&
     typeof data.teamName==="string" && typeof data.story==="string" &&
     Array.isArray(data.evidence) && Array.isArray(data.solutions) &&
@@ -765,8 +788,12 @@ async function importTeamFiles(input){
       const text=await file.text();
       const data=JSON.parse(text);
       if(!validateTeamPage(data))throw new Error("Unsupported team-page file");
-      const key=`${data.caseId}::${data.teamName.toLowerCase()}`;
-      const idx=teacherPages.findIndex(p=>`${p.caseId}::${p.teamName.toLowerCase()}`===key);
+      if(!data.teamId){
+        // Legacy v1 files did not contain a team ID.
+        data.teamId=`legacy-${data.caseId}-${data.teamName.toLowerCase().replace(/\s+/g,"-")}`;
+      }
+      const key=data.teamId;
+      const idx=teacherPages.findIndex(p=>p.teamId===key);
       if(idx>=0)teacherPages[idx]=data;else teacherPages.push(data);
     }catch(e){errors.push(file.name)}
   }
@@ -814,14 +841,14 @@ function classContents(){
 function teacherDesk(){
   shell(`<main class="screen teacher-desk">${strip}
     <div class="teacher-hero"><span class="kicker">TEACHER DESK</span><h1>CLASS MAGAZINE BUILDER</h1>
-    <p class="lead">Import each newsroom’s <b>.json</b> page file. The app builds one Teen Voices Class Edition locally in this browser — no accounts, database or server.</p></div>
+    <p class="lead">Collect the <b>.json</b> page file from each newsroom, then import the files here. Teacher Desk builds one Teen Voices Class Edition locally in this browser — no accounts, database or server.</p></div>
     <div class="teacher-actions card no-print">
-      <label class="btn btn-primary file-btn">Import Team Pages<input type="file" accept=".json,.team,application/json" multiple onchange="importTeamFiles(this)"></label>
+      <label class="btn btn-primary file-btn">Import Team Page Files<input type="file" accept=".json,.team,application/json" multiple onchange="importTeamFiles(this)"></label>
       <button class="btn btn-secondary" ${teacherPages.length?"":"disabled"} onclick="window.print()">Print / Save Full Class Edition as PDF</button>
       <button class="btn btn-secondary" ${teacherPages.length?"":"disabled"} onclick="clearTeacherMagazine()">Clear Builder</button>
       <button class="btn btn-secondary" onclick="closeTeacherDesk()">← Back to Student App</button>
     </div>
-    <div class="notice notice-info no-print"><b>${teacherPages.length} page${teacherPages.length===1?"":"s"} loaded.</b> Importing the same case + newsroom name again replaces that team’s earlier page.</div>
+    <div class="notice notice-info no-print"><b>${teacherPages.length} ${teacherPages.length===1?"story":"stories"} received.</b> Importing a newer file from the same newsroom replaces only that newsroom’s earlier page. When all team files are loaded, save the full issue as PDF.</div>
     ${teacherPages.length?`<div class="teacher-page-list no-print">${teacherPages.map((p,i)=>`<div class="card teacher-page-card"><span class="editor-label">CASE ${String(p.caseId).padStart(2,"0")}</span><h3>${esc(p.caseTitle)}</h3><p>${esc(p.teamName)}</p><button class="btn btn-secondary" onclick="removeTeacherPage(${i})">Remove</button></div>`).join("")}</div>`:""}
     <div id="classEditionPrint" class="class-edition-preview">${classCover()}${teacherPages.length?classContents():""}${teacherPages.map((p,i)=>classMagazinePage(p,i)).join("")}
       ${teacherPages.length?`<section class="back-cover magazine-print-page"><h1>YOUR VOICE MATTERS.</h1><p>We investigated. We questioned. We created. We communicated.</p><div class="complete-stamp">TEEN VOICES • CLASS EDITION</div></section>`:""}

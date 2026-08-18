@@ -137,3 +137,20 @@ Keep the same repository and GitHub Pages URL.
 - Revision CTA is explicit: `← Revise Recommendations`.
 - Case-specific model examples are retained.
 - State version bumped to v16 to avoid stale browser state after deployment.
+
+## FINAL 1.2 — Teacher Desk submission flow
+- Student final flow now says `Submit to Teacher Desk` and honestly explains that this downloads one `.json` page file for the teacher.
+- Added a post-download `TEAM PAGE READY` confirmation with clear handoff instructions.
+- Teacher Desk copy now uses `Import Team Page Files` and shows stories received.
+- Clarified OUR TAKE as the team’s main advice, not a fourth recommendation.
+- Added the visible mission route `CASE → SOLUTIONS → PITCH → PUBLISH` on the opening screen.
+
+## FINAL 1.3 — production freeze micro-fixes
+- Renamed the obsolete `Reveal Final Challenge` CTA to `Questions from the Newsroom`.
+- Entering Revision now clears the four self-check boxes; teams must revise, re-check, then approve.
+- Added a stable unique `teamId` to exported Teacher Desk page files.
+- Teacher Desk now replaces only a newer file from the same newsroom, even when two teams use the same case or same display name.
+- Submission wording now accurately says `Export Page for Teacher Desk`.
+- Updated team-page schema to v2 while retaining import compatibility for legacy v1 files.
+- Removed several dead CSS rules left from earlier peer-review / CASE FILE iterations.
+- State and Teacher Desk storage versions bumped for a clean deployment.
