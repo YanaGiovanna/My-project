@@ -91,8 +91,8 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 15;
-const STORAGE_KEY = "tv_final_state_v15";
+const STATE_VERSION = 16;
+const STORAGE_KEY = "tv_final_state_v16";
 const DEFAULT_STATE = {
   version:STATE_VERSION, step:0, teamSize:4, teamName:"", roles:["","","",""], selectedCase:null,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
@@ -198,7 +198,7 @@ function cases(){shell(newsroom(`<h2>Newsroom Case Archive</h2><p class="lead">C
 <div class="footer-actions">${back()}<button class="btn btn-primary" ${state.selectedCase?"":"disabled"} onclick="${state.selectedCase?"go(3)":""}">Investigate Case →</button></div>`))}
 function profile(){let x=c();shell(newsroom(`<div class="case-heading"><span class="kicker">CASE #0${x.id}</span><div><span class="editor-label">STORY FILE</span><h2>${x.title}</h2></div></div>
 <div class="card profile profile-compact">
-  <div class="profile-meta"><div class="dossier-badge"><span>TV</span><b>CASE FILE</b></div><div><span class="editor-label">SUBJECT</span><p class="profile-name"><b>${x.name}, ${x.age}</b></p></div></div>
+  <div class="profile-meta profile-meta-clean"><div><span class="editor-label">SUBJECT</span><p class="profile-name"><b>${x.name}, ${x.age}</b></p></div></div>
   <div class="profile-story"><h3>Story Brief</h3><div class="badges">${x.traits.map(t=>`<span class="badge">${t}</span>`).join("")}</div><p class="case-text">${x.intro}</p><div class="notice notice-warn"><b>Editorial challenge:</b> ${x.challenge}</div></div>
 </div><div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(4)">Open Evidence Board →</button></div>`))}
 function toggleEvidence(i){if(state.evidenceChecked)return;if(state.evidence.includes(i))state.evidence=state.evidence.filter(v=>v!==i);else if(state.evidence.length<2)state.evidence.push(i);save();render()}
@@ -355,20 +355,37 @@ function editorExample(){
 function editorFeedbackMarkup(){
   const q=solutionQualityData();
   if(!q.actionReason.length&&!q.duplicateActions.length){
-    return `<div class="notice notice-good"><b>Editor’s check ✓</b> Your recommendations are ready for the next stage.</div>`;
+    return `<div class="notice notice-good"><b>Editor’s check ✓</b> Your recommendations are specific, different and supported by clear reasons.</div>`;
   }
-  let blocks=[];
+
+  const notes=[];
   if(q.duplicateActions.length){
-    blocks.push(`<div class="editor-action"><span class="editor-action-no">1</span><div><b>Use different actions</b><p>Give three clearly different pieces of advice.</p></div></div>`);
+    notes.push({
+      title:"Make the actions different",
+      text:"Your recommendations are too similar. Try three different approaches."
+    });
   }
   if(q.actionReason.length){
-    blocks.push(`<div class="editor-action"><span class="editor-action-no">${blocks.length+1}</span><div><b>Explain WHY</b><p>The reason should explain the expected result, not repeat the recommendation.</p></div></div>`);
+    notes.push({
+      title:"Explain why each action could help",
+      text:"The reason should describe the likely result — not repeat the action."
+    });
   }
+  if(notes.length<3){
+    notes.push({
+      title:"Keep the advice specific and realistic",
+      text:"Write something the person could actually do in this situation."
+    });
+  }
+
+  const shown=notes.slice(0,3);
   return `<div class="editor-coach">
-    <span class="editor-label">EDITOR’S NOTE</span><h3>Make your recommendations stronger</h3>
-    ${blocks.join("")}
-    ${(()=>{const ex=editorExample();return `<div class="editor-example"><b>Example</b><br><b>Do:</b> ${esc(ex.do)}<br><b>Why:</b> ${esc(ex.why)}</div>`})()}
-    <button class="btn btn-secondary editor-revise-btn" onclick="go(6)">Revise Recommendations →</button>
+    <span class="editor-label">EDITOR’S NOTE</span>
+    <h3>One quick revision</h3>
+    <p class="case-text">Fix the points below, then send your recommendations back to the editor.</p>
+    ${shown.map((n,i)=>`<div class="editor-action"><span class="editor-action-no">${i+1}</span><div><b>${n.title}</b><p>${n.text}</p></div></div>`).join("")}
+    ${(()=>{const ex=editorExample();return `<div class="editor-example"><b>Case example</b><br><b>Do:</b> ${esc(ex.do)}<br><b>Why:</b> ${esc(ex.why)}</div>`})()}
+    <button class="btn btn-primary editor-revise-btn" onclick="go(6)">← Revise Recommendations</button>
   </div>`;
 }
 function finalValidationIssues(){

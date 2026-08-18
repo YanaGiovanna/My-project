@@ -274,3 +274,25 @@ h3{font-size:25px;margin:0 0 12px}
   .magazine-page{width:auto!important;max-width:none!important}
   .class-cover,.class-contents,.back-cover,.class-mag-page{break-inside:avoid;page-break-inside:avoid}
 }
+
+/* ===== FINAL 1.1 profile + editor feedback polish ===== */
+.profile-meta-clean{
+  display:block;
+  padding:4px 0 2px;
+  border:0;
+  background:transparent;
+}
+.profile-meta-clean .profile-name{
+  margin:.2rem 0 .6rem;
+  font-size:clamp(1.25rem,5vw,1.7rem);
+}
+.editor-coach .editor-action{
+  margin:.7rem 0;
+}
+.editor-coach .editor-action p{
+  margin:.25rem 0 0;
+}
+.editor-revise-btn{
+  width:100%;
+  margin-top:14px;
+}

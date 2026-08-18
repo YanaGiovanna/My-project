@@ -128,3 +128,12 @@ Keep the same repository and GitHub Pages URL.
 - Teacher Desk exports standard `.json` team-page files for better Safari/Finder compatibility and still accepts legacy `.team` files.
 - Print CSS targets A4 and avoids splitting recommendation/evidence blocks where possible.
 - State version bumped to isolate the final build from stale browser state.
+
+## FINAL 1.1 UI/methodology polish
+- Removed the oversized CASE FILE placeholder from every case profile.
+- Subject and Story Brief now move up into a cleaner editorial layout.
+- Editor feedback is prioritised and limited to concise actionable guidance.
+- Similar recommendations now produce one combined message instead of pair-by-pair repetition.
+- Revision CTA is explicit: `← Revise Recommendations`.
+- Case-specific model examples are retained.
+- State version bumped to v16 to avoid stale browser state after deployment.
