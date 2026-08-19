@@ -282,18 +282,12 @@ h3{font-size:25px;margin:0 0 12px}
 }
 
 /* ===== FINAL 1.2 submission flow ===== */
-.mission-route{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:10px;align-items:center;margin:24px 0}
-.mission-route>div:not(.route-arrow){background:#fffaf0;border:1px solid var(--line);border-top:5px solid var(--mustard);padding:15px;border-radius:7px;text-align:center}
-.mission-route span{display:block;width:34px;height:34px;line-height:34px;margin:0 auto 8px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900}
-.mission-route b{display:block;font-size:18px;color:var(--navy)}
-.mission-route small{display:block;margin-top:4px;font-size:15px;color:var(--muted)}
-.route-arrow{font-size:28px;font-weight:900;color:var(--red)}
+
 .submit-teacher-btn{min-width:260px}
 .submission-success{display:flex;gap:14px;align-items:flex-start;max-width:820px;margin:18px auto 0;padding:16px 18px;background:#edf5ef;border:1px solid #bfd6c5;border-left:6px solid var(--green);border-radius:8px;text-align:left}
 .submission-success>span{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:50%;background:var(--green);color:#fff;font-weight:900;font-size:22px}
 .submission-success b{font-size:19px}.submission-success p{margin:4px 0 0;font-size:17px;line-height:1.45}
-@media(max-width:720px){
- .mission-route{grid-template-columns:1fr;gap:8px}.route-arrow{transform:rotate(90deg);font-size:22px}.mission-route>div:not(.route-arrow){text-align:left;display:grid;grid-template-columns:40px 1fr;column-gap:10px}.mission-route span{grid-row:1/3;margin:0}.mission-route small{font-size:16px}.submit-teacher-btn{min-width:0}
+@media(max-width:720px){.submit-teacher-btn{min-width:0}
 }
 
 /* ===== FINAL 1.3 freeze micro-fixes ===== */
@@ -321,4 +315,36 @@ h3{font-size:25px;margin:0 0 12px}
 @media(max-width:720px){
   .solution-lens{font-size:12px}
   .editor-rule-mini{font-size:15px}
+}
+
+/* ===== FINAL 1.6 — full UX / design / methodology polish ===== */
+.mission-hero{max-width:980px;margin:0 auto;padding:30px 32px}
+.mission-kicker{display:inline-flex;width:auto;font-size:13px;letter-spacing:.8px;padding:7px 10px}
+.mission-tagline{font-size:20px;margin:8px 0 5px;color:var(--navy)}
+.mission-intro{max-width:790px;margin:0 0 18px;font-size:18px;line-height:1.55;color:#39485a}
+.mission-route{display:flex;align-items:stretch;gap:8px;margin:18px 0}
+.mission-step{flex:1;min-width:0;display:flex;gap:11px;align-items:flex-start;background:#fffaf0;border:1px solid var(--line);border-top:4px solid var(--mustard);border-radius:8px;padding:13px 12px;text-align:left}
+.mission-step>span{flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--navy);color:#fff;font-weight:900}
+.mission-step section{min-width:0}
+.mission-step b{display:block;color:var(--navy);font-size:17px;line-height:1.1}
+.mission-step small{display:block;margin-top:3px;font-size:14px;font-weight:800;color:#667487}
+.mission-step p{margin:7px 0 0;font-size:14px;line-height:1.35;color:#4d5967}
+.route-arrow{align-self:center;color:var(--mustard);font-size:22px;font-weight:900;line-height:1}
+.mission-goal{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:14px 0 18px;padding:11px 13px;border-left:4px solid var(--mustard);background:#fff}
+.mission-goal b{font-size:16px;color:var(--navy)}
+@media(max-width:720px){
+  .mission-hero{padding:20px 16px}
+  .mission-hero h1{font-size:39px;line-height:.98;margin:8px 0 12px}
+  .mission-kicker{font-size:11px;padding:6px 8px}
+  .mission-tagline{font-size:17px;line-height:1.3;margin-bottom:7px}
+  .mission-intro{font-size:16px;line-height:1.45;margin-bottom:14px}
+  .mission-route{display:block;margin:14px 0}
+  .mission-step{min-height:94px;padding:11px 12px;gap:10px}
+  .mission-step>span{flex-basis:30px;width:30px;height:30px}
+  .mission-step b{font-size:16px}
+  .mission-step small{font-size:13px}
+  .mission-step p{font-size:13px;margin-top:5px}
+  .route-arrow{height:14px;display:grid;place-items:center;font-size:17px}
+  .mission-goal{margin:13px 0 15px;padding:10px 11px}
+  .mission-goal b{font-size:14px;line-height:1.35}
 }

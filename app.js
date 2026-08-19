@@ -91,8 +91,8 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 20;
-const STORAGE_KEY = "tv_final_state_v20";
+const STATE_VERSION = 21;
+const STORAGE_KEY = "tv_final_state_v21";
 const DEFAULT_STATE = {
   version:STATE_VERSION, step:0, teamSize:4, teamName:"", teamId:"", roles:["","","",""], selectedCase:null, pageSubmitted:false,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
@@ -162,7 +162,7 @@ function toggleMobileMenu(btn){
   const menu=document.getElementById("mobileMenu");if(!menu)return;
   const open=menu.classList.toggle("open");btn.setAttribute("aria-expanded",open?"true":"false");
 }
-const strip=`<div class="editor-strip"><span class="editor-label">NEWSROOM</span><span>CASE DESK • EVIDENCE • SOLUTIONS • FINAL PITCH</span></div>`;
+const strip=`<div class="editor-strip"><span class="editor-label">NEWSROOM</span><span>CASE • EVIDENCE • SOLUTIONS • PITCH • PUBLISH</span></div>`;
 function go(n){if(timerHandle){clearInterval(timerHandle);timerHandle=null}state.step=n;save();render();window.scrollTo({top:0,behavior:"smooth"})}
 function back(){return state.step?`<button class="btn btn-secondary" onclick="go(${state.step-1})">← Back</button>`:""}
 function newsroom(content){return `<main class="screen">${strip}${content}</main>`}
@@ -174,11 +174,17 @@ function render(){
   if(state.step===9)return revision(); if(state.step===10)return speaker(); if(state.step===11)return onAir();
   if(state.step===12)return challenge(); if(state.step===13)return reflect(); return published();
 }
-function briefing(){shell(newsroom(`<section class="hero"><span class="kicker">FINAL MISSION</span><h1>THE REAL TEEN GUIDE</h1>
-<p class="lead"><b>One newsroom. One case. One page of our class magazine.</b></p>
-<p class="lead">Investigate a teen situation, use evidence, create realistic solutions and publish one page of the <b>Teen Voices Class Edition</b>.</p>
-<div class="mission-route"><div><span>1</span><b>CASE</b><small>Investigate</small></div><div class="route-arrow">→</div><div><span>2</span><b>SOLUTIONS</b><small>Create + explain</small></div><div class="route-arrow">→</div><div><span>3</span><b>PITCH</b><small>Share + answer</small></div><div class="route-arrow">→</div><div><span>4</span><b>PUBLISH</b><small>Join the Class Edition</small></div></div>
-<div class="cta-row"><button class="btn btn-primary" onclick="go(1)">Enter the Newsroom →</button></div></section>`))}
+function briefing(){shell(newsroom(`<section class="hero mission-hero"><span class="kicker mission-kicker">FINAL MISSION • CLASS EDITION</span><h1>THE REAL TEEN GUIDE</h1>
+<p class="mission-tagline"><b>One newsroom. One case. One page for our class magazine.</b></p>
+<p class="mission-intro">Investigate a real teen situation, use evidence, create realistic solutions and publish your team’s page in the <b>Teen Voices Class Edition</b>.</p>
+<div class="mission-route">
+  <div class="mission-step"><span>1</span><section><b>CASE</b><small>Investigate</small><p>Understand the situation. Find evidence. Build your hypothesis.</p></section></div><div class="route-arrow" aria-hidden="true">↓</div>
+  <div class="mission-step"><span>2</span><section><b>SOLUTIONS</b><small>Create + explain</small><p>Develop 3 different realistic actions and explain why each could work.</p></section></div><div class="route-arrow" aria-hidden="true">↓</div>
+  <div class="mission-step"><span>3</span><section><b>PITCH</b><small>Present + respond</small><p>Share your team’s ideas and answer one audience question.</p></section></div><div class="route-arrow" aria-hidden="true">↓</div>
+  <div class="mission-step"><span>4</span><section><b>PUBLISH</b><small>Join the Class Edition</small><p>Finalise your page and export it for the Teacher Desk.</p></section></div>
+</div>
+<div class="mission-goal"><span class="editor-label">YOUR MISSION</span><b>Create advice that is specific, realistic and useful for other teenagers.</b></div>
+<div class="cta-row"><button class="btn btn-primary" onclick="go(1)">Start the Mission →</button></div></section>`))}
 function team(){
  const roles=[["🔎","CASE DETECTIVE","Find and verify evidence."],["💡","IDEA BUILDER","Develop realistic solutions."],["💬","LANGUAGE COACH","Support clear, accurate English."],["🎙️","VOICE EDITOR","Shape the final pitch."]];
  shell(newsroom(`<h2>Build Your Newsroom Team</h2><p class="lead">Everyone contributes. One speaker will present the final edition later.</p>
@@ -211,11 +217,11 @@ function profile(){let x=c();shell(newsroom(`<div class="case-heading"><span cla
 <div class="card profile profile-compact">
   <div class="profile-meta profile-meta-clean"><div><span class="editor-label">SUBJECT</span><p class="profile-name"><b>${x.name}, ${x.age}</b></p></div></div>
   <div class="profile-story"><h3>Story Brief</h3><div class="badges">${x.traits.map(t=>`<span class="badge">${t}</span>`).join("")}</div><p class="case-text">${x.intro}</p><div class="notice notice-warn"><b>Editorial challenge:</b> ${x.challenge}</div></div>
-</div><div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(4)">Open Evidence Board →</button></div>`))}
+</div><div class="footer-actions">${back()}<button class="btn btn-primary" onclick="go(4)">Investigate the Evidence →</button></div>`))}
 function toggleEvidence(i){if(state.evidenceChecked)return;if(state.evidence.includes(i))state.evidence=state.evidence.filter(v=>v!==i);else if(state.evidence.length<2)state.evidence.push(i);save();render()}
 function checkEvidence(){if(state.evidence.length===2){state.evidenceChecked=true;save();render()}}
 function retryEvidence(){state.evidence=[];state.evidenceChecked=false;save();render()}
-function evidence(){let x=c(),good=state.evidence.length===2&&state.evidence.every(i=>x.lines[i].e);shell(newsroom(`<h2>Editor’s Evidence Board</h2><p class="lead">Select <b>two details</b> that best explain the real problem. Then verify your evidence.</p><div class="grid grid-2"><div class="card">${x.lines.map((l,i)=>{let cl=state.evidence.includes(i)?"chosen":"";if(state.evidenceChecked&&state.evidence.includes(i))cl+=l.e?" correct":" incorrect";return `<button class="evidence-line ${cl}" onclick="toggleEvidence(${i})">${l.t}${state.evidenceChecked&&state.evidence.includes(i)?(l.e?" ✓":" ↻"):""}</button>`}).join("")}</div><div class="card"><h3>Selected Evidence</h3>${state.evidence.length?state.evidence.map((i,j)=>`<div class="notice ${state.evidenceChecked?(x.lines[i].e?"notice-good":"notice-warn"):"notice-info"}"><b>Clue ${j+1}:</b> ${x.lines[i].t}</div><br>`).join(""):`<div class="notice notice-warn">Choose two clues.</div>`}${state.evidenceChecked?(good?`<div class="notice notice-good"><b>Verified ✓</b> These clues support your investigation.</div>`:`<div class="notice notice-warn"><b>Look again.</b> Does every clue really explain the problem?</div>`):""}</div></div><div class="footer-actions">${back()}${!state.evidenceChecked?`<button class="btn btn-primary" ${state.evidence.length===2?"":"disabled"} onclick="checkEvidence()">Verify Evidence ✓</button>`:good?`<button class="btn btn-primary" onclick="go(5)">Build Hypothesis →</button>`:`<button class="btn btn-secondary" onclick="retryEvidence()">Try Again ↻</button>`}</div>`))}
+function evidence(){let x=c(),good=state.evidence.length===2&&state.evidence.every(i=>x.lines[i].e);shell(newsroom(`<h2>Editor’s Evidence Board</h2><p class="lead">Choose <b>two details</b> that best help your newsroom understand the problem. Then verify your evidence.</p><div class="grid grid-2"><div class="card">${x.lines.map((l,i)=>{let cl=state.evidence.includes(i)?"chosen":"";if(state.evidenceChecked&&state.evidence.includes(i))cl+=l.e?" correct":" incorrect";return `<button class="evidence-line ${cl}" onclick="toggleEvidence(${i})">${l.t}${state.evidenceChecked&&state.evidence.includes(i)?(l.e?" ✓":" ↻"):""}</button>`}).join("")}</div><div class="card"><h3>Selected Evidence</h3>${state.evidence.length?state.evidence.map((i,j)=>`<div class="notice ${state.evidenceChecked?(x.lines[i].e?"notice-good":"notice-warn"):"notice-info"}"><b>Clue ${j+1}:</b> ${x.lines[i].t}</div><br>`).join(""):`<div class="notice notice-warn">Choose two clues.</div>`}${state.evidenceChecked?(good?`<div class="notice notice-good"><b>Verified ✓</b> These clues support your investigation.</div>`:`<div class="notice notice-warn"><b>Look again.</b> Does every clue really explain the problem?</div>`):""}</div></div><div class="footer-actions">${back()}${!state.evidenceChecked?`<button class="btn btn-primary" ${state.evidence.length===2?"":"disabled"} onclick="checkEvidence()">Verify Evidence ✓</button>`:good?`<button class="btn btn-primary" onclick="go(5)">Build Hypothesis →</button>`:`<button class="btn btn-secondary" onclick="retryEvidence()">Try Again ↻</button>`}</div>`))}
 function hypReady(){return state.hypothesis.trim().length>0&&state.feelings.trim().length>0}
 function caseScaffold(){
   const id=c().id;
@@ -801,14 +807,14 @@ function published(){
  <div class="complete no-print">
    <div class="complete-stamp">PAGE PUBLISHED ✓</div>
    <h1>Your Teen Voices Page Is Ready</h1>
-   <p class="lead">Your newsroom has finished its page. Now submit the page file to the teacher so it can join the shared Class Edition.</p>
+   <p class="lead">Your newsroom has finished its page. Now export the team page file and give it to your teacher so it can join the shared Class Edition.</p>
    <div class="class-edition-banner"><b>EVERY TEAM → ONE PAGE → ONE CLASS MAGAZINE</b></div>
    ${magazinePage()}
    <div class="export-guide notice notice-info">
-     <b>SEND YOUR PAGE TO THE TEACHER</b>
+     <b>EXPORT YOUR TEAM PAGE</b>
      <p><b>1.</b> Tap <b>Export Team Page</b>.<br>
      <b>2.</b> Choose <b>Download</b>.<br>
-     <b>3.</b> Send the downloaded team file to your teacher.</p>
+     <b>3.</b> Give or send the downloaded team file to your teacher.</p>
      <small>Do not rename or edit the file.</small>
    </div>
    <div class="cta-row" style="justify-content:center">
@@ -817,7 +823,7 @@ function published(){
      <button class="btn btn-secondary" onclick="resetMission()">New Mission</button>
    </div>
    ${state.pageSubmitted
-      ? `<div class="submission-success" role="status" aria-live="polite"><span>✓</span><div><b>TEAM PAGE READY</b><p>Your team file has been downloaded. Now send it to your teacher. The teacher will import it into Teacher Desk.</p></div></div>`
+      ? `<div class="submission-success" role="status" aria-live="polite"><span>✓</span><div><b>TEAM PAGE READY</b><p>Your team file has been downloaded. Now give or send it to your teacher. The teacher will import it into Teacher Desk.</p></div></div>`
       : ``}
  </div>
  <section id="printEdition" class="print-only" aria-label="Teen Voices Class Edition page">${magazinePage()}</section>`))

@@ -170,3 +170,14 @@ Keep the same repository and GitHub Pages URL.
 - Renamed the optional badge to `Editor’s Challenge • Optional`.
 - Updated the Editorial Rule to make the purpose of three recommendations explicit.
 - State version bumped to v20.
+
+## FINAL 1.6 — full polish
+- Rebuilt Final Mission as a compact responsive CASE → SOLUTIONS → PITCH → PUBLISH roadmap.
+- Added concise purpose text to each mission step and a clear YOUR MISSION outcome.
+- Replaced the old red route arrows with restrained mustard editorial connectors.
+- Improved mobile density so the roadmap is much easier to scan on iPhone.
+- Updated the newsroom strip to match the complete learning journey.
+- Refined Case → Evidence transition and evidence instructions.
+- Removed remaining ambiguous submit/send wording from the published-page export flow.
+- Preserved the v1.5 three-lens Solution Desk, revision loop, live Q&A, timers, unique team IDs and Teacher Desk magazine builder.
+- State version bumped to v21.
