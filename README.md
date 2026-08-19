@@ -154,3 +154,19 @@ Keep the same repository and GitHub Pages URL.
 - Updated team-page schema to v2 while retaining import compatibility for legacy v1 files.
 - Removed several dead CSS rules left from earlier peer-review / CASE FILE iterations.
 - State and Teacher Desk storage versions bumped for a clean deployment.
+
+## FINAL 1.4 — student export UX
+- Replaced ambiguous send/submission wording with `Export Team Page`.
+- Added a student-facing three-step iPhone/Safari-friendly export guide.
+- Clarified that the downloaded team file must be given/sent to the teacher.
+- Removed wording that could imply automatic network transfer into Teacher Desk.
+- Kept the Teacher Desk workflow unchanged: teacher imports team files and builds the class magazine.
+
+## FINAL 1.5 — methodology polish
+- Added three distinct solution lenses for every case so Recommendations 1–3 prompt different kinds of thinking.
+- Mia now uses Listening / Sharing Responsibility / Supporting Quieter Voices.
+- Alex, Sam, Team Delta and the Friend Group also have three case-specific solution directions.
+- Rewrote optional perspective prompts to guide thinking without suggesting the answer.
+- Renamed the optional badge to `Editor’s Challenge • Optional`.
+- Updated the Editorial Rule to make the purpose of three recommendations explicit.
+- State version bumped to v20.

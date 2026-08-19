@@ -91,8 +91,8 @@ const CASES = [
   }
 ];
 
-const STATE_VERSION = 18;
-const STORAGE_KEY = "tv_final_state_v18";
+const STATE_VERSION = 20;
+const STORAGE_KEY = "tv_final_state_v20";
 const DEFAULT_STATE = {
   version:STATE_VERSION, step:0, teamSize:4, teamName:"", teamId:"", roles:["","","",""], selectedCase:null, pageSubmitted:false,
   evidence:[], evidenceChecked:false, hypothesis:"", feelings:"", viewpoint:"",
@@ -220,11 +220,86 @@ function hypReady(){return state.hypothesis.trim().length>0&&state.feelings.trim
 function caseScaffold(){
   const id=c().id;
   const data={
-    1:{reason:"Think about what makes starting at a new school difficult.",feel:"Think about how Alex might feel during breaks or new conversations.",view:"How might classmates interpret Alex’s quiet behaviour?",solution:"Choose one small action Alex could realistically try at school.",why:"Explain how that action could make meeting people easier."},
-    2:{reason:"Think about why Mia may be making most decisions herself.",feel:"How might Mia and the quieter team members feel?",view:"Could Mia and her teammates understand ‘good leadership’ differently?",solution:"Suggest one action that could help Mia include more team voices.",why:"Explain how it could improve both teamwork and the project."},
-    3:{reason:"Think about why the same short message can have different meanings online.",feel:"How might Sam and the friends reading the message feel?",view:"What other interpretation of the message is possible?",solution:"Suggest one safe action the group could take before reacting.",why:"Explain how it could reduce assumptions or misunderstanding."},
-    4:{reason:"Think about how different work styles can create tension.",feel:"How might different members of Team Delta feel during meetings?",view:"Could the same personality trait be both useful and difficult?",solution:"Suggest one team rule or action that uses different strengths.",why:"Explain how it could make collaboration more effective."},
-    5:{reason:"Think about why notifications compete with face-to-face attention.",feel:"How might the friends feel when everyone keeps checking phones?",view:"Could some phone use during a meeting still be reasonable?",solution:"Suggest one realistic rule the friends could agree on together.",why:"Explain how it could protect real-life time without banning technology."}
+    1:{
+      reason:"Think about what makes starting at a new school difficult.",
+      feel:"Think about how Alex might feel during breaks or new conversations.",
+      view:"Think about how Alex’s classmates might see the situation differently.",
+      lenses:["START SMALL","SHARED INTERESTS","CONVERSATION STARTER"],
+      solutions:[
+        "Suggest one small way Alex could start contact with one classmate.",
+        "Suggest one activity where Alex could meet people with similar interests.",
+        "Suggest one simple way Alex could start a natural conversation at school."
+      ],
+      whys:[
+        "Explain how starting with one person could make socialising feel easier.",
+        "Explain how a shared interest could make meeting people more natural.",
+        "Explain how a simple conversation starter could reduce pressure."
+      ]
+    },
+    2:{
+      reason:"Think about why Mia may be making most decisions herself.",
+      feel:"How might Mia and the quieter team members feel?",
+      view:"Think about how Mia and her teammates might see the situation differently.",
+      lenses:["LISTEN TO EVERYONE","SHARE RESPONSIBILITY","SUPPORT QUIETER VOICES"],
+      solutions:[
+        "Suggest one way Mia could hear everyone’s ideas before making a decision.",
+        "Suggest one task or decision Mia could share with another team member.",
+        "Suggest one way Mia could help quieter team members take part."
+      ],
+      whys:[
+        "Explain how this could help team members feel heard.",
+        "Explain how sharing responsibility could improve teamwork.",
+        "Explain how this could help the whole team contribute."
+      ]
+    },
+    3:{
+      reason:"Think about why the same short message can have different meanings online.",
+      feel:"How might Sam and the friends reading the message feel?",
+      view:"Think about another reasonable way someone could interpret the message.",
+      lenses:["CHECK THE MEANING","SLOW THE REACTION","CLEAR IT UP"],
+      solutions:[
+        "Suggest one way the group could check what Sam meant before reacting.",
+        "Suggest one action that could stop the misunderstanding from getting bigger.",
+        "Suggest one way the friends could clear up the situation respectfully."
+      ],
+      whys:[
+        "Explain how checking the meaning could reduce assumptions.",
+        "Explain how slowing the reaction could prevent more conflict.",
+        "Explain how clear communication could rebuild understanding."
+      ]
+    },
+    4:{
+      reason:"Think about how different work styles can create tension.",
+      feel:"How might different members of Team Delta feel during meetings?",
+      view:"Think about how the same behaviour could be seen differently by different teammates.",
+      lenses:["ORGANISE THE WORK","USE DIFFERENT STRENGTHS","IMPROVE MEETINGS"],
+      solutions:[
+        "Suggest one way Team Delta could organise tasks more clearly.",
+        "Suggest one way the team could use different members’ strengths.",
+        "Suggest one rule that could make team discussions more effective."
+      ],
+      whys:[
+        "Explain how clearer organisation could reduce tension.",
+        "Explain how using different strengths could improve the project.",
+        "Explain how a meeting rule could help everyone contribute."
+      ]
+    },
+    5:{
+      reason:"Think about why notifications compete with face-to-face attention.",
+      feel:"How might the friends feel when everyone keeps checking phones?",
+      view:"Think about how different friends might see phone use during their time together.",
+      lenses:["PROTECT TALK TIME","MANAGE NOTIFICATIONS","AGREE ON A RULE"],
+      solutions:[
+        "Suggest one way the friends could protect some phone-free conversation time.",
+        "Suggest one realistic way they could reduce distracting notifications.",
+        "Suggest one group rule that balances online connection and time together."
+      ],
+      whys:[
+        "Explain how protected talk time could improve face-to-face connection.",
+        "Explain how fewer interruptions could help everyone stay present.",
+        "Explain why a shared rule could feel fair and realistic."
+      ]
+    }
   };
   return data[id]||data[1];
 }
@@ -253,7 +328,7 @@ function hypothesis(){
       <div id="feelHelp" class="field-help ${state.feelings.trim().length?"done":""}">${state.feelings.trim().length?"✓ Idea added":"Add one clear idea to continue."}</div>
     </div>
     <div class="field">
-      <label>Could someone see the situation differently? <span class="optional-mark">Optional challenge</span></label>
+      <label>Could someone see the situation differently? <span class="optional-mark">Editor’s Challenge • Optional</span></label>
       <textarea placeholder="${esc(s.view)}" oninput="state.viewpoint=this.value;save()">${esc(state.viewpoint)}</textarea>
       <div class="field-help">Use this box if your team can think of another point of view.</div>
     </div>
@@ -301,24 +376,24 @@ function solutionHelp(i,type){
 function solutions(){
  const s=caseScaffold();
  shell(newsroom(`<h2>Solution Desk</h2>
-<p class="lead">Create <b>3 practical recommendations</b>. Each recommendation must add a <b>new idea</b>.</p>
+<p class="lead">Create <b>3 practical recommendations</b>. Use a different solution lens for each one.</p>
 <div class="notice notice-info"><b>Newsroom brief:</b> One meaningful sentence in each required box is enough. All six boxes must be completed.</div>
 <div class="grid grid-3">${[0,1,2].map(i=>`<div class="card solution-card">
+<span class="solution-lens">LENS ${i+1} • ${esc(s.lenses[i])}</span>
 <h3>Recommendation ${i+1}</h3>
 <div class="field">
 <label>What should ${subjectPronoun()} do? <span class="required-mark">Required</span></label>
-<textarea placeholder="${esc(s.solution)}" oninput="state.solutions[${i}]=this.value;save();updateSolutionField(${i},'solution',this.value)">${esc(state.solutions[i])}</textarea>
+<textarea placeholder="${esc(s.solutions[i])}" oninput="state.solutions[${i}]=this.value;save();updateSolutionField(${i},'solution',this.value)">${esc(state.solutions[i])}</textarea>
 ${solutionHelp(i,"solution")}
 </div>
 <div class="field">
 <label>Why could it work? <span class="required-mark">Required</span></label>
-<textarea placeholder="${esc(s.why)}" oninput="state.reasons[${i}]=this.value;save();updateSolutionField(${i},'reason',this.value)">${esc(state.reasons[i])}</textarea>
+<textarea placeholder="${esc(s.whys[i])}" oninput="state.reasons[${i}]=this.value;save();updateSolutionField(${i},'reason',this.value)">${esc(state.reasons[i])}</textarea>
 ${solutionHelp(i,"reason")}
 </div>
 </div>`).join("")}</div>
-<div class="notice notice-warn"><b>Editorial rule:</b> Be specific, realistic and avoid repeating the same idea in different words.</div>
+<div class="notice notice-warn"><b>Editorial rule:</b> Give three different solutions. Each one should solve the problem in a different way.<br><span class="editor-rule-mini">Be specific • Be realistic • Explain why it could work</span></div>
 <div class="footer-actions">${back()}<button id="buildFeatureBtn" class="btn btn-primary" ${solReady()?"":"disabled"} onclick="${solReady()?"go(7)":""}">Build Feature →</button></div>`))}
-
 function normalizeText(s){
   return String(s||"").toLowerCase().replace(/[^a-z0-9а-яё\s]/gi," ").replace(/\s+/g," ").trim();
 }
@@ -729,14 +804,21 @@ function published(){
    <p class="lead">Your newsroom has finished its page. Now submit the page file to the teacher so it can join the shared Class Edition.</p>
    <div class="class-edition-banner"><b>EVERY TEAM → ONE PAGE → ONE CLASS MAGAZINE</b></div>
    ${magazinePage()}
+   <div class="export-guide notice notice-info">
+     <b>SEND YOUR PAGE TO THE TEACHER</b>
+     <p><b>1.</b> Tap <b>Export Team Page</b>.<br>
+     <b>2.</b> Choose <b>Download</b>.<br>
+     <b>3.</b> Send the downloaded team file to your teacher.</p>
+     <small>Do not rename or edit the file.</small>
+   </div>
    <div class="cta-row" style="justify-content:center">
      <button class="btn btn-secondary" onclick="printFinalFeature()">Save Our Page as PDF</button>
-     <button class="btn btn-primary submit-teacher-btn" onclick="downloadTeamPageFile()">Export Page for Teacher Desk →</button>
+     <button class="btn btn-primary submit-teacher-btn" onclick="downloadTeamPageFile()">Export Team Page →</button>
      <button class="btn btn-secondary" onclick="resetMission()">New Mission</button>
    </div>
    ${state.pageSubmitted
-      ? `<div class="submission-success" role="status" aria-live="polite"><span>✓</span><div><b>TEAM PAGE READY</b><p>Your Class Edition file has been downloaded. Give this <b>.json</b> file to your teacher. The teacher will import it into Teacher Desk.</p></div></div>`
-      : `<div class="notice notice-info"><b>How submission works:</b> “Export Page for Teacher Desk” downloads one small <b>.json</b> page file. Give that file to your teacher; no account or database is required.</div>`}
+      ? `<div class="submission-success" role="status" aria-live="polite"><span>✓</span><div><b>TEAM PAGE READY</b><p>Your team file has been downloaded. Now send it to your teacher. The teacher will import it into Teacher Desk.</p></div></div>`
+      : ``}
  </div>
  <section id="printEdition" class="print-only" aria-label="Teen Voices Class Edition page">${magazinePage()}</section>`))
 }
